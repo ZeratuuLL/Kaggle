@@ -2,4 +2,4 @@ This repository is for codes and analysis of the Kaggle competition [Google Anal
 
 Here is a quick brief for the files:
 
-  * Nothing yet
+  * Getting Started: Let's get started!
