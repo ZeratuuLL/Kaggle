@@ -57,5 +57,5 @@ Things about different variables:
       * hits: interesting numbers
       * newVisits: Meaning? 703k of 1s. The rest missing?
       * pageviews: Like hits, numbers
-      * transactionRevenue: The prediction?
+      * transactionRevenue: The prediction, 11515 records?
       * visits: all 1s. To be deleted
