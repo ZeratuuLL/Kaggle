@@ -22,7 +22,7 @@ Some things...
 
 Things about different variables:
   * channelGrouping: 8 levels
-  * data: to be splited? The histogram seems strange. But the value_counts shows something different. Will have a closer look
+  * data: **To be deleted since everything is in visitStartTime**
   * fullvisitorID: 714k visitors.
   * sessionId: almost unique for everyone
   * SocialEngagementType: none engaged, delete?
