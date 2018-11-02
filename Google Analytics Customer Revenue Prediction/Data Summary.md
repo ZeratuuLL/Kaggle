@@ -14,6 +14,7 @@ Some things...
 * Column 'totals.bounces': NaN implies not bounced session, 1 is bounced session. meaningful NaN! But what is a bounced session?
 * Column 'totals.pageviews': should be integer, no idea what NaN means here.
 * sessionId is fullvisitorId_visitId. less than number of rows. Look at 3 nonunique cases: two rows with same sessionId. Columns that are different: date(3/3), visitstartime(3/3), geoNetwork.networkDomain(2/3), total.bounces(2/3), total.hits(3/3), total.pageviews(3/3). For date, (3/3) consecutive days, but the order is not same as the row index order. For visitorstartime, (3/3) visits happen in North America/US, the visitstartimes are after 11pm and at the very beginning of 12am the next day in California time.
+* visitStartTime: got a single line of code converting to human readable time.
 
 
 # Lifeng:
