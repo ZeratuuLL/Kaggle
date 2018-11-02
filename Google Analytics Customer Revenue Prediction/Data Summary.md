@@ -20,6 +20,8 @@ Some things...
 Things about different variables:
   * channelGrouping: 8 levels
   * data: to be splited? The histogram seems strange. But the value_counts shows something different. Will have a closer look
+  * fullvisitorID: 714k visitors.
+  * sessionId: almost unique for everyone
   * SocialEngagementType: none engaged, delete?
   * visitID: I have a count and a histogram
   * visitNumber: Similar to visitID, but much longer tail. Need to have a closer look
