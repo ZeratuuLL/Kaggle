@@ -45,11 +45,17 @@ Things about different variables:
       * adwordsClickInfo.isVideoAd: False and NA. To be deleted
       * adwordsClickInfo.page: Some numbers, around 21k non-missing values
       * adwordsClickInfo.slot: 2 levels, 21k non-missing values
-      * campaign: 
+      * campaign: 865k missing.... Highly likely to be deleted
       * campaignCode: only 1 non-missing value?
       * isTrueDirect: 274k True. Nothing else
       * medium: Meaning? Around 144k missing values (not NA)
-      * referralPath:
-      * source:
+      * referralPath: 1475 different sources. Perhaps we will look into it
+      * source: 380 sources. Should be able to extract something
       * Others: NAs
   * Those start with 'totals'
+      * bounces: half missing half 1?
+      * hits: interesting numbers
+      * newVisits: Meaning? 703k of 1s. The rest missing?
+      * pageviews: Like hits, numbers
+      * transactionRevenue: The prediction?
+      * visits: all 1s. To be deleted
