@@ -28,7 +28,7 @@ Things about different variables:
   * SocialEngagementType: none engaged, delete?
   * visitID: I have a count and a histogram
   * visitNumber: Similar to visitID, but much longer tail. Need to have a closer look
-  * visitStarttime: Split into year, month, day, hour, minute
+  * visitStarttime: Split into year, month, day, hour, minute (**done**)
   * Those start with 'device': 
       * browser: 54 levels, a lot ones
       * Category: 3 levels
