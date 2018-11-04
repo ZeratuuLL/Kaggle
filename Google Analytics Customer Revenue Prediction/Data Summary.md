@@ -30,9 +30,9 @@ Things about different variables:
   * visitNumber: Similar to visitID, but much longer tail. Need to have a closer look
   * visitStarttime: Split into year, month, day, hour, minute (**done**)
   * Those start with 'device': 
-      * browser: 54 levels, a lot ones
-      * Category: 3 levels
-      * isMobile: False/True is approximately 3/1
+      * browser: 54 levels, a lot ones. Now I plan to use **Beta($\alpha, \beta$) distribution as a prior** and **combine the browsers** with only a few records.
+      * Category: 3 levels. Browser seem to be highly correlated with Category. A tree classifier should be able to deal with this
+      * isMobile: False/True is approximately 3/1. Almost perfectly math Category. After reading the file I decided to **ignore this**.
       * Everything else: All NA, to be deleted
   * Those start with 'geoNetwork':
       * city: More than half missing. 648 cities with minimum count 3
