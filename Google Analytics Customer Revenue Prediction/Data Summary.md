@@ -58,9 +58,9 @@ Things about different variables:
       * source: 380 sources. Should be able to extract something
       * Others: NAs
   * Those start with 'totals'
-      * bounces: half missing half 1?
-      * hits: interesting numbers
-      * newVisits: Meaning? 703k of 1s. The rest missing?
-      * pageviews: Like hits, numbers
+      * bounces: half missing half 1? Seems to be a bad thing if the value is 1. Perhaps related to other variables. NAs filled.
+      * hits: interesting numbers. A high number should be good. A crosstable with hits and bounces has been obtained. When **bounces=1, hits=1, 2 or 3** and more than **99.1%** is 1. When **bounces=1, hits>1** with probability around **99.99%**. Perhaps using hits will be enough.
+      * newVisits: 703k of 1s. Filled the rest with 0. Totally agrees with visitNumber. **To be deleted**
+      * pageviews: Aroun 741k records equal to hits. Perhaps a log transformation.
       * transactionRevenue: The prediction, 11515 records?
       * visits: all 1s. To be deleted
