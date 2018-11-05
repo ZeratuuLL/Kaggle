@@ -2,15 +2,28 @@
 # [A link to detailed data description](https://support.google.com/analytics/answer/3437719?hl=en)
 
 Some things...
-* Column 'transactionRevenue': the unit for is US dollar $* 10^6$. Other than the interger values, other values are NaN. Guess it means no value passed, which means no transaction.
-* Column 'trafficSource.keyword': some of them are '(not provided)', some of them are NaN. Others are not clear. Details should be refered to data description. Refer to the jupyter notebook for details of counts.
-* Column 'socialEngagementType': only 'Not Socially Engaged', does not seem useful.
-* Column 'totals.newVisits': NaN implies not first visit, 1 is first time visit. meaningful NaN!
-* Column 'totals.bounces': NaN implies not bounced session, 1 is bounced session. meaningful NaN! But what is a bounced session?
-* Column 'totals.pageviews': should be integer, no idea what NaN means here.
+* 'transactionRevenue': the unit for is US dollar $* 10^6$. Other than the interger values, other values are NaN. Guess it means no value passed, which means no transaction.
+* 'trafficSource.keyword': some of them are '(not provided)', some of them are NaN. Others are not clear. Details should be refered to data description. Refer to the jupyter notebook for details of counts.
+* 'socialEngagementType': only 'Not Socially Engaged', does not seem useful.
+* 'totals.newVisits': NaN implies not first visit, 1 is first time visit. meaningful NaN!
+* 'totals.bounces': NaN implies not bounced session, 1 is bounced session. meaningful NaN! But what is a bounced session?
+* 'totals.pageviews': should be integer, no idea what NaN means here.
 * sessionId is fullvisitorId_visitId. less than number of rows. Look at 3 nonunique cases: two rows with same sessionId. Columns that are different: date(3/3), visitstartime(3/3), geoNetwork.networkDomain(2/3), total.bounces(2/3), total.hits(3/3), total.pageviews(3/3). For date, (3/3) consecutive days, but the order is not same as the row index order. For visitorstartime, (3/3) visits happen in North America/US, the visitstartimes are after 11pm and at the very beginning of 12am the next day in California time.
 * visitStartTime: got a single line of code converting to human readable time.
 * geoNetwork.country: there are '(not set)'. 1468.
+* geoNetwork.city: 56% is 'not available in demo dataset'. 3.8% is '(not set)'. Similar rankings for counts of visits considering all and only buy visits. Mean revenue: 'Fort Collins' is the highest, obviously higher than others. Followed by other cities with obvious differences. The ranking of mean revenue is very different from the ranking of counts of visits.
+* geoNetwork.cityId: 1 level 'not available in demo dataset'. 
+* geoNetwork.continent: America is highest in counts of visits (all and buy). For counts of buy visits, other continents are less comparable to America. Mean revenue: America is the highest. could be considered as a useful variable, or maybe use subContinent instead. 0.1% is '(not set)'.
+* geoNetwork.subContinent: similar as geoNetwork.continent in counts of visits, but different for mean revenue. Easten African stands out as the second highest.
+* geoNetwork.country: United States dominated in counts of visits. Completely different story for mean revenue, further referred to the plots. The different behaviors here might be interesting.
+* geoNetwork.latitude: 1 level.
+* geoNetwork.longitude: 1 level.
+* geoNetwork.metro: about 80% are 'not available in demo dataset' or '(not set)'. 'not available in demo dataset' dominates in counts of visits (both all and buy). For mean revenue, valid levels dominate. (interesting)
+* geoNetwork.networkDomain: 27% '(not set)'. 16% unknown.unknown. As a result, these two dominates in counts of visits. For mean revenue: other valid levels stand out.
+* geoNetwork.networkLocation: 1 level.
+* geoNetwork.region: 56% 'not available in demo dataset', 3% '(not set)'. 'not available in demo dataset'. For counsts of visits, 'not available in demo dataset' and 'Califorina' dominate. For mean revenue, many other valid levels exceed these two. 
+* mean revenue is revenue per visit, not per user.
+
 
 
 # Lifeng:
