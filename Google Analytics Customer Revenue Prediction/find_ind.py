@@ -1,14 +1,11 @@
 def find_ind(some_list):
     '''
     Input: 
-        some_list: list-like, containing some IDs
+        some_list: list-like, containing some IDs, cannot be a single ID
     Output: 
-        the indices of IDs, which have repetations in training set, in some_list
+        the indices of IDs, which have repetations in training set, in some_list, but not grouped(or sorted) by ID
     '''
-    ind=set()
-    some_list=set(some_list)
-    for ID in some_list:
-        indices=train[train['fullVisitorId']==ID].index.values
-        if len(indices)>=2:
-            ind=ind | set(indices)
-    return list(ind)
+    some_list = set(some_list)
+    ins = train['fullVisitorId'].apply(lambda x: x in some_list)
+    ind=list(ins.index[ins.values])
+    return ind
