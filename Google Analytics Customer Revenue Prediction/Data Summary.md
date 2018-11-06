@@ -77,21 +77,19 @@ Things about different variables:
 # Tongyi:
 # [Some explanation](https://support.google.com/analytics/answer/1033173)
 * Those start with 'trafficSource':
-      * adContent: The ad content of the traffic source. 98.8% Nan. 44 types, ome could be combined. 
-      * adwordsClickInfo.adNetworkType: Network type. Nan: 97.6%. 2 types: google search and search partners. Almost all Google search.
-      * adwordsClickInfo.criteriaParameters：all not available.
-      * adwordsClickInfo.gclId: The Google Click ID. Nan: 97.6%. Same ID ---> Same person. Same person ---> Different ID.
-      * adwordsClickInfo.isVideoAd: True if it is a Trueview video ad. Nan: 97.6%. Same as adNetwork Type. All False. 
-      * adwordsClickInfo.page: Page number in search results where the ad was shown. Nan: 97.6%. Same as adNetwork Type. 
-      * adwordsClickInfo.slot: Position of the Ad. Nan: 97.6%. Same as adNetwork Type. "top" and "rhs"
-      * campaign: The campaign value.??
-      * campaignCode: only 1 non-missing value?
-      * isTrueDirect: This field will also be true if 2 successive but distinct sessions have exactly the same campaign details. ??
-      * medium: The medium of the traffic source. 5 types + none (143026) + not set (120)
-      * keyword：The keyword of the traffic source, usually set when the trafficSource.medium is "organic" or "cpc". Nan (502929) + not provided (366363) + many (3659) types
-      * referralPath: If trafficSource.medium is "referral", then this is set to the path of the referrer.
-      * source: No missing value. 379 sources + (direct). like referral/search engine. could be combined (by key word or source type?). 
-      * Ps: 'cpc' all from google except one 'bing'. Those start with 'ad' almost all 'cpc'.
-      * Comments: Unknown for prediction. Predict features? Interact with other information? 
-
-      
+* adContent: The ad content of the traffic source. 98.8% Nan. 44 types, ome could be combined. 
+* adwordsClickInfo.adNetworkType: Network type. Nan: 97.6%. 2 types: google search and search partners. Almost all Google search.
+* adwordsClickInfo.criteriaParameters：all not available.
+* adwordsClickInfo.gclId: The Google Click ID. Nan: 97.6%. Same ID ---> Same person. Same person ---> Different ID.
+* adwordsClickInfo.isVideoAd: True if it is a Trueview video ad. Nan: 97.6%. Same as adNetwork Type. All False. 
+* adwordsClickInfo.page: Page number in search results where the ad was shown. Nan: 97.6%. Same as adNetwork Type. 
+* adwordsClickInfo.slot: Position of the Ad. Nan: 97.6%. Same as adNetwork Type. "top" and "rhs"
+* campaign: The campaign value.??
+* campaignCode: only 1 non-missing value?
+* isTrueDirect: This field will also be true if 2 successive but distinct sessions have exactly the same campaign details. ??
+* medium: The medium of the traffic source. 5 types + none (143026) + not set (120)
+* keyword：The keyword of the traffic source, usually set when the trafficSource.medium is "organic" or "cpc". Nan (502929) + not provided (366363) + many (3659) types
+* referralPath: If trafficSource.medium is "referral", then this is set to the path of the referrer.
+* source: No missing value. 379 sources + (direct). like referral/search engine. could be combined (by key word or source type?). 
+* Ps: 'cpc' all from google except one 'bing'. Those start with 'ad' almost all 'cpc'.
+* Comments: Unknown for prediction. Predict features? Interact with other information? 
