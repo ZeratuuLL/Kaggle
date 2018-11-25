@@ -1,6 +1,3 @@
-
-
-
 def customNull(colname):
     row_num=train.shape[0]
     a=[]
