@@ -23,7 +23,13 @@ What can be useful?
   * (customDimensions, customMetrics, customVariables) are they all empty lists? (Shitong)
   * how many things are there in contentGroup? contentGroupUniqueViews 1,2,3 or more?(Tongyi)
   * experiment (Lifeng)
+    
+    In the first 10000 lines, it's totally empty
+    
   * What's in Item? (Lifeng)
+     
+    In the first 10000 lines, it's totally empty
+    
   * In 'promotionActionInfo', most of them are 'promoIsView', some are 'promoIsClick'. More details? As well as eventInfo (Shitong)
   * publisher_infos, dataSource (Tongyi)
   * Are transactions and items paired? Anything interesting?(Shitong)
