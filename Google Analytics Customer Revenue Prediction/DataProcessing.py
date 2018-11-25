@@ -13,4 +13,6 @@ def custom_length(x):
     return result
 
 ############################# totals #############################
-train['totals.totalTransactionRevenue'].astype(float, inplace=True)
+train['totals.totalTransactionRevenue'] = train['totals.totalTransactionRevenue'].apply(lambda x: np.float(x))
+train['totals.haveRevenue'] = train['totals.totalTransactionRevenue'].apply(lambda x: not np.isnan(x))
+pd.crosstab(train['eCommerceAction.Purchase']>0, train['totals.haveRevenue'])
