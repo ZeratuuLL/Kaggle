@@ -1,4 +1,5 @@
 What can be useful?
+  * In total 1708337 rows, 7561613 pages (hits actually)
   * hour, minute, total length (use average time to estimate the last page), total length is time (Lifeng)
     * This is an example
     * Of how to write down findings
