@@ -12,7 +12,14 @@ What can be useful?
     * promoPosition: position
     
     Didn't find any relationship with other variables. Nothing extracted.
-  * eCommmerceAction's value (Lifeng)
+  * eCommerceAction's value (Lifeng)
+  
+    Many interesting findings:
+    * Despite of many 0 in action_type, we still get a lot of meaningful actions
+    * Only when action_type is '5', which means 'check out', the step can be different then 1. Need to look at more rolls to know whether this is true for 1.7M rows of data.
+    * If we count every page, the numbers of (5,1), (5,2), (5,3), (6,1) are not decreasing. But if we only looking at rows instead of all pages, remove all duplicates in each row, then (5,1) (5,2) (5,3) will be decreasing. But (6,1) is still more than (5,3) but less than (5,2)
+    * 3 and 4 are paired with eventInfo
+    
   * (customDimensions, customMetrics, customVariables) are they all empty lists? (Shitong)
   * how many things are there in contentGroup? contentGroupUniqueViews 1,2,3 or more?(Tongyi)
   * experiment (Lifeng)
