@@ -8,6 +8,6 @@ def custom_length(x):
     for i in [0,-1]:
         temp = ()
         for j in keys:
-            temp += (x[i][j])
+            temp += (len(x[i][j]))
         result += temp
     return result
