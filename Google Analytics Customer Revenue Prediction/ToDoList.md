@@ -32,7 +32,10 @@ What can be useful?
     
   * In 'promotionActionInfo', most of them are 'promoIsView', some are 'promoIsClick'. More details? As well as eventInfo (Shitong)
   * publisher_infos, dataSource (Tongyi)
+      
+    In the first 10000 lines, publisher_infos is totally empty; dataSource takes 'web' or 'not set' (Some don't have this key).    
+    
   * Are transactions and items paired? Anything interesting?(Shitong)
   * referer (Tongyi)
-  
+
 Try to find some insights. If there is anything valuable, think about what to extract. Write a function which can be directly applied to the dataset and save it in the dataprocessing py file. Add comments/docstrings to explain its function. Also write down your findings here
