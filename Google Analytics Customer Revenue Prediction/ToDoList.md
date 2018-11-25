@@ -14,6 +14,7 @@ What can be useful?
     * promoPosition: position
     
     Didn't find any relationship with other variables. Nothing extracted.
+    
   * eCommerceAction's value (Lifeng)
   
       Many interesting findings:
@@ -40,8 +41,8 @@ What can be useful?
     
   * In 'promotionActionInfo', most of them are 'promoIsView', some are 'promoIsClick'. More details? As well as eventInfo (Shitong)
   * publisher_infos, dataSource (Tongyi)
-      
-    In the first 10000 lines, publisher_infos is totally empty; dataSource takes 'web' or 'not set' (Some don't have this key).    
+    * publisher_infos is totally empty
+    * dataSource only has two values. The count is ```Counter({'web': 4377060, '(not set)': 8767})```. We can look into single rows now. Like if someone has multiple clicks, do they have same value for this?
     
   * Are transactions and items paired? Anything interesting?(Shitong)
   * referer (Tongyi)
