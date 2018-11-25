@@ -4,6 +4,14 @@ What can be useful?
     * Of how to write down findings
   * screenDepth in appInfo. Find the max one. (Lifeng)
   * Is Promotion empty for all? (Lifeng)
+  
+    When 'promotion' is not empty, it's a list of dictionaries, like product. Each dictionary has 4 keys:
+    * promoCreative: some .jpg
+    * promoID: promoName + promoPosition
+    * promoName: Name
+    * promoPosition: position
+    
+    Didn't find any relationship with other variables. Nothing extracted.
   * eCommmerceAction's value (Lifeng)
   * (customDimensions, customMetrics, customVariables) are they all empty lists? (Shitong)
   * how many things are there in contentGroup? contentGroupUniqueViews 1,2,3 or more?(Tongyi)
