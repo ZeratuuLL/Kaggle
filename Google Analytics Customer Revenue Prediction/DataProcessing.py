@@ -11,3 +11,6 @@ def custom_length(x):
             temp += (len(x[i][j]),)
         result += temp
     return result
+
+############################# totals #############################
+train['totals.totalTransactionRevenue'].astype(float, inplace=True)
