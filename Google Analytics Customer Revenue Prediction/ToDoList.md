@@ -28,6 +28,9 @@ What can be useful?
     * 3 and 4 are paired with eventInfo
     
   * (customDimensions, customMetrics, customVariables) are they all empty lists? (Shitong)
+  
+     For first 10000 rows, all empty list. The code is updated to check the whole data set.
+     
   * how many things are there in contentGroup? contentGroupUniqueViews 1,2,3 or more?(Tongyi)
   
     Here is the count for (key: value) pairs in all data 
@@ -47,6 +50,12 @@ What can be useful?
     Totally empty.
     
   * In 'promotionActionInfo', most of them are 'promoIsView', some are 'promoIsClick'. More details? As well as eventInfo (Shitong)
+    * eventInfo (8416)
+      * at least two keys: eventAction, eventCategory. some have one more key: eventLabel
+      * eventAction: 'Add to Cart': 1381,'Onsite Click': 63,'Product Click': 1210,'Promotion Click': 424,'Quickview Click': 5152,'Remove    from Cart': 186
+      * eventCategory: Enhanced Ecommerce and Contact us
+      * eventLabel: for Contact us eventCategory, Email/Phone. need further check for all data rows. (not that useful). for Enhanced Ecommerce, specific product name (not useful)
+      
   * publisher_infos, dataSource (Tongyi)
     * publisher_infos is totally empty
     * dataSource only has two values. The count is ```Counter({'web': 4377060, '(not set)': 8767})```. We can look into single rows now. Like if someone has multiple clicks, do they have same value for this?
