@@ -4,12 +4,12 @@ train = pd.read_pickle('Train_Saved.pkl')
 
 def custom_length(x):
     keys = ['customVariables', 'customDimensions', 'customMetrics']
-    result = ()
-    for i in [0,-1]:
+    result = []
+    for dicts in x:
         temp = ()
         for j in keys:
-            temp += (len(x[i][j]),)
-        result += temp
+            temp += (len(dicts[j]),)
+        result.append(temp)
     return result
 
 ############################# totals #############################
