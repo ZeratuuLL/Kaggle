@@ -50,12 +50,12 @@ What can be useful?
     Totally empty.
     
   * In 'promotionActionInfo', most of them are 'promoIsView', some are 'promoIsClick'. More details? As well as eventInfo (Shitong)
-    * eventInfo (8416)
+    * eventInfo (8416) (discard)
       * at least two keys: eventAction, eventCategory. some have one more key: eventLabel
       * eventAction: 'Add to Cart': 1381,'Onsite Click': 63,'Product Click': 1210,'Promotion Click': 424,'Quickview Click': 5152,'Remove    from Cart': 186
-      * eventCategory: Enhanced Ecommerce and Contact us
-      * eventLabel: for Contact us eventCategory, Email/Phone. need further check for all data rows. (not that useful). for Enhanced Ecommerce & Quickview Click, specific product name (not useful)
-     * promotion (7350)
+      * eventCategory: Enhanced Ecommerce and Contact us 
+      * eventLabel: for Contact us eventCategory, Email/Phone. need further check for all data rows. (not that useful). for Enhanced Ecommerce & Quickview Click, specific product name (not useful) no label information except for Onsite click and Quickview Click
+     * promotion (7350) (discard)
        * promoCreative: product name + .jpg or .png
        * promoId: almost same product name + Row + some number
        * promoName: the product name part of promoId, but seems all Android are spelled as Andriod in promoName...
