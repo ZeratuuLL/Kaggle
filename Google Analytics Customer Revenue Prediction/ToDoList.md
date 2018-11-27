@@ -54,7 +54,7 @@ What can be useful?
       * at least two keys: eventAction, eventCategory. some have one more key: eventLabel
       * eventAction: 'Add to Cart': 1381,'Onsite Click': 63,'Product Click': 1210,'Promotion Click': 424,'Quickview Click': 5152,'Remove    from Cart': 186
       * eventCategory: Enhanced Ecommerce and Contact us
-      * eventLabel: for Contact us eventCategory, Email/Phone. need further check for all data rows. (not that useful). for Enhanced Ecommerce, specific product name (not useful)
+      * eventLabel: for Contact us eventCategory, Email/Phone. need further check for all data rows. (not that useful). for Enhanced Ecommerce & Quickview Click, specific product name (not useful)
      * promotion (7350)
        * promoCreative: product name + .jpg or .png
        * promoId: almost same product name + Row + some number
