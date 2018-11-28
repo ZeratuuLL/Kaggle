@@ -4,16 +4,22 @@ from collections import Counter
 train = pd.read_pickle('Train_Saved.pkl')
 
 ############################# totals #############################
-train['totals.totalTransactionRevenue'] = train['totals.totalTransactionRevenue'].astype(float)
-train['totals.haveRevenue'] = 1 - np.isnan(train['totals.totalTransactionRevenue'])
-pd.crosstab(train['eCommerceAction.Purchase']>0, train['totals.haveRevenue'])
+train['totals.totalTransactionRevenue'] = train['totals.totalTransactionRevenue'].astype(float).fillna(0).apply(lambda x: np.log(x+1))
 
+train['totals.haveRevenue'] = train['totals.totalTransactionRevenue']>0
+
+# relationship between number of pages and rate of purchase
 train['totals.pageviews'] = train['totals.pageviews'].astype(float)
 
-# to see relationship between number of pages and rate of purchase
-country_wise = train.groupby(['geoNetwork.country'])['totals.haveRevenue'].mean()
-continent_wise = train.groupby(['geoNetwork.continent'])['totals.haveRevenue'].mean()
-subcontinent_wise = train.groupby(['geoNetwork.subContinent'])['totals.haveRevenue'].mean()
+# relationship between geo information and shopping rate
+country_rate = train.groupby(['geoNetwork.country'])['totals.haveRevenue'].mean()
+continent_rate = train.groupby(['geoNetwork.continent'])['totals.haveRevenue'].mean()
+subcontinent_rate = train.groupby(['geoNetwork.subContinent'])['totals.haveRevenue'].mean()
+
+# relationship between geo information and shopping revenue
+country_value = train.groupby(['geoNetwork.country'])['totals.totalTransactionRevenue'].mean()
+continent_value = train.groupby(['geoNetwork.continent'])['totals.totalTransactionRevenue'].mean()
+subcontinent_value = train.groupby(['geoNetwork.subContinent'])['totals.totalTransactionRevenue'].mean()
 
 #############################  hits  ##############################
 def check_inside(x, ind):
@@ -61,14 +67,20 @@ content2_count = content2_counter.apply(lambda x: [x[key] for key in unique_cont
 content3_count = content3_counter.apply(lambda x: [x[key] for key in unique_content3])
 time.time()-t1
 
-temp_table = train['fullVisitorId']
+train['content1_count'] = content1_count
+train['content2_count'] = content2_count
+train['content3_count'] = content3_count
+
+temp_table = pd.DataFrame({'fullVisitorId':train['fullVisitorId'].values.tolist()})
 for i in range(len(unique_content1)):
     temp_table['content1.'+unique_content1[i]] = content1_count.apply(lambda x: x[i])
-# for content2
-# for content3 
-#To do:
-# 1. create two smaller tables, one has only one line (or twelve lines for different month?), the other will have a line for each visitorId
-# 2. The final table will be a weighted average of these two tables. Or we can place these two together?
+for i in range(len(unique_content2)):
+    temp_table['content1.'+unique_content2[i]] = content2_count.apply(lambda x: x[i])
+for i in range(len(unique_content3)):
+    temp_table['content1.'+unique_content3[i]] = content3_count.apply(lambda x: x[i])
+
+temp_table = temp_table.groupby(['fullVisitorId']).sum()
+alphas = temp_table.iloc[:,1:].sum()+1
 
 ############################ others  ##############################
 def get_year(x):
