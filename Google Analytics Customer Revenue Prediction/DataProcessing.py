@@ -82,6 +82,13 @@ for i in range(len(unique_content3)):
 temp_table = temp_table.groupby(['fullVisitorId']).sum()
 alphas = temp_table.iloc[:,1:].sum()+1
 
+############################ continent  ##############################
+continent = train['geoNetwork.continent']
+unique_continent = train['geoNetwork.continent'].unique()
+continent_counter = continent.apply(lambda x: Counter([x]))
+for i in range(len(unique_continent)):
+    temp_table['continent.'+unique_continent[i]] = continent_counter.apply(lambda x:x[i])
+
 ############################ others  ##############################
 def get_year(x):
     return x//10000
