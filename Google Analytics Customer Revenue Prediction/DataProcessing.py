@@ -100,6 +100,6 @@ def dir_alpha(x):
     '''
     x is a data frame containing all rows, first column is fullvistorID
     alpha_i is equal to N_i(counts for all visitors in category i)+1
-    return a pandas series
+    return a pandas dataframe with one row
     '''
-    return x.iloc[:,1:].sum()+1
+    return (x.iloc[:,1:].sum()+1).to_frame().T
