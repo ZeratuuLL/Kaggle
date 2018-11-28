@@ -95,7 +95,7 @@ monthly_revenue = train.groupby(['fullVisitorId', 'year', 'month'])['totals.tota
 ###################### remove unless columns ######################
 drop_list = []
 
-###################### bayesian calculation ######################
+###################### bayesian calculation blablabla ######################
 def dir_alpha(x):
     '''
     x is a data frame containing all rows, first column is fullvistorID
@@ -103,3 +103,6 @@ def dir_alpha(x):
     return a pandas dataframe with one row
     '''
     return (x.iloc[:,1:].sum()+1).to_frame().T
+
+def series_to_frame(x):
+    return x.to_frame()
