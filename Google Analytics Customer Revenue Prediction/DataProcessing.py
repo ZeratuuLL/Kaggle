@@ -84,10 +84,12 @@ alphas = temp_table.iloc[:,1:].sum()+1
 
 ############################ continent  ##############################
 continent = train['geoNetwork.continent']
-unique_continent = train['geoNetwork.continent'].unique()
 continent_counter = continent.apply(lambda x: Counter([x]))
+unique_continent = list(continent_counter.sum().keys())
+continent_count = continent_counter.apply(lambda x: [x[key] for key in unique_continent])
+
 for i in range(len(unique_continent)):
-    temp_table['continent.'+unique_continent[i]] = continent_counter.apply(lambda x:x[i])
+    temp_table['continent.'+unique_continent[i]] = continent_count.apply(lambda x:x[i])
 
 ############################ others  ##############################
 def get_year(x):
