@@ -32,7 +32,7 @@ country_posterior = country_posterior.iloc[:,-2:]
 country_posterior.to_pickle('country_posterior.pkl')
                        
 # page visit number
-#construct a data frame with 'fullVistorId' as index and two columns: 'pageview': sum of pageviews, 'counts': number of same person. 
+#construct a data frame with 'fullVistorId' as index and two coulmns: 'pageview': sum of pagevews, 'counts': number of same person. 
 
 temp = pd.DataFrame({'fullVisitorId':train['fullVisitorId'].values.tolist()})
 temp['counts'] = 1
@@ -158,7 +158,17 @@ temp_table['mobile'].to_pickle('mobile_posterior.pkl')
 ############################ others  ##############################
 train['year'] = train['date'].apply(lambda x: x//10000)
 train['month'] = train['date'].apply(lambda x: (x%10000)//100)
+train['month_index'] = (train['year']-2016)*12 + train['month']
 train['totals.totalTransactionRevenue'] = train['totals.totalTransactionRevenue'].apply(lambda x: np.exp(x)-1)
+
+temp_table = train.groupby(['month_index']).aggregate({'totals.totalTransactionRevenue':['sum'],\
+                                                         'totals.haveRevenue':['sum','mean']})
+temp_table.columns = ['total_revenue','count','rate']
+temp_table['average_revenue'] = temp_table['total_revenue']/(temp_table['count']+0.001)
+temp_table['total_revenue'] = temp_table['total_revenue'].apply(lambda x:np.log(x+1))
+temp_table['average_revenue'] = temp_table['average_revenue'].apply(lambda x:np.log(x+1))
+temp_table.to_pickle('monthly_summary.pkl')
+# Now wait for time series analysis
 
 def get_time_length(x):
     result = []
@@ -172,13 +182,16 @@ def average_length(x):
         return np.nan
     else:
         return((x[-1]-x[0])/(len(x)-1))
+      
 train['average_time'] = temp.apply(average_length)/int(1e5)
 train['average_time'] = train['average_time'].fillna(train['average_time'].sum()/(train['average_time'].shape[0]-train['average_time'].apply(np.isnan).sum()))
 temp_table = train.groupby(['fullVisitorId'])['average_time'].mean()
 temp_table.to_pickle('Train_VisitLength.pkl')
 
 monthly_revenue = train.groupby(['fullVisitorId', 'year', 'month'], as_index=False).aggregate({'totals.totalTransactionRevenue':['sum'],\
-                                                                               'geoNetwork.country':['unique']})
-monthly_revenue.columns = ['fullVisitorId', 'year', 'month', 'revenue', 'country']
+                                                                                               'geoNetwork.country':['unique'],\
+                                                                                               'month_index':['unique']})
+monthly_revenue.columns = ['fullVisitorId', 'year', 'month', 'revenue', 'country', 'month_index']
 monthly_revenue['country'] = monthly_revenue['country'].apply(lambda x:x[0])
+monthly_revenue['month_index'] = monthly_revenue['month_index'].apply(lambda x:x[0])
 monthly_revenue.to_pickle('Training_Base.pkl')
