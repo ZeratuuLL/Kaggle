@@ -34,24 +34,32 @@ subcontinent_value = train.groupby(['geoNetwork.subContinent'])['totals.totalTra
 
 continent_mu = pd.DataFrame()
 continent_n=pd.DataFrame()
+continent_raten=pd.DataFrame()
 temp_table_continent = train[['fullVisitorId','geoNetwork.continent']]
 mu_dict_continent = dict()
 n_dict_continent = dict()
+raten_dict_continent = dict()
 for i in train['geoNetwork.continent'].unique():
     mu_dict_continent.update({i:train[train['geoNetwork.continent']==i]['totals.totalTransactionRevenue'].mean()})
     n_dict_continent.update({i:train[train['geoNetwork.continent']==i]['totals.totalTransactionRevenue'].count()})
+    raten_dict_continent.update({i:train[train['geoNetwork.continent']==i]['totals.haveRevenue'].sum()})
 for i in train['geoNetwork.continent'].unique():
     continent_mu=continent_mu.append(temp_table_continent[temp_table_continent['geoNetwork.continent']==i].assign(param=mu_dict_continent[i],ignore_index=True))
     continent_n=continent_n.append(temp_table_continent[temp_table_continent['geoNetwork.continent']==i].assign(param=n_dict_continent[i],ignore_index=True))
+    continent_raten=continent_raten.append(temp_table_continent[temp_table_continent['geoNetwork.continent']==i].assign(param=raten_dict_continent[i],ignore_index=True))
+
 
 continent_mu=continent_mu.set_index("fullVisitorId")['param']
 continent_n=continent_n.set_index("fullVisitorId")['param']
-nus=continent_mu.copy()
-nus.loc[:]=train.shape[0
-mu0s=continent_mu.copy()
-mu0s.loc[:]=train['totals.totalTransactionRevenue'].mean()                                     
+continent_raten=continent_raten.set_index("fullVisitorId")['param']
+nu=train.shape[0]
+mu0=train['totals.totalTransactionRevenue'].mean()    
+alpha = train['totals.haveRevenue'].sum()+1
+beta = train.shape[0]+2-alpha
 c=0.1
-temp_continent=(c*nus.multiply(mu0s)+continent_n.multiply(continent_mu)).divide(c*nus+continent_n)
+crate=0.1
+temp_continent=(c*nu*mu0+continent_n.multiply(continent_mu)).divide(c*nu+continent_n)
+temp_continent_rate=(crate*alpha+continent_raten).divide(crate*alpha + crate*beta+continent_n)
                        
 # page visit number
 ###########################################################################
