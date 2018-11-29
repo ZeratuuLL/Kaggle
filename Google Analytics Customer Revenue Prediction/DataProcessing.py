@@ -72,7 +72,7 @@ for i in train['geoNetwork.continent'].unique():
 continent_mu=continent_mu.set_index("fullVisitorId")['param']
 continent_n=continent_n.set_index("fullVisitorId")['param']
 nus=continent_mu.copy()
-nus.loc[:]=train.shape[0
+nus.loc[:]=train.shape[0]
 mu0s=continent_mu.copy()
 mu0s.loc[:]=train['totals.totalTransactionRevenue'].mean()                                     
 c=0.1
