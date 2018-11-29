@@ -1,5 +1,3 @@
-c
-
 def Merge(c1=0.00001, c2=0.01):
     '''
     This function merges different sources into a single training set.
