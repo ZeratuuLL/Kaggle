@@ -57,7 +57,6 @@ subcontinent_value = train.groupby(['geoNetwork.subContinent'])['totals.totalTra
 #        post_temp = post_est(temp_mu,nu,x_bar,n_temp,alpha)
 #        temp_post_est.update({i:post_temp})
 #     return temp_post_est
-############################## continent ####################################
 continent_mu = pd.DataFrame()
 continent_n=pd.DataFrame()
 temp_table_continent = train[['fullVisitorId','geoNetwork.continent']]
@@ -73,55 +72,14 @@ for i in train['geoNetwork.continent'].unique():
 continent_mu=continent_mu.set_index("fullVisitorId")['param']
 continent_n=continent_n.set_index("fullVisitorId")['param']
 nus=continent_mu.copy()
-nus.loc[:]=train.shape[0]
+nus.loc[:]=train.shape[0
 mu0s=continent_mu.copy()
 mu0s.loc[:]=train['totals.totalTransactionRevenue'].mean()                                     
 c=0.1
 temp_continent=(c*nus.multiply(mu0s)+continent_n.multiply(continent_mu)).divide(c*nus+continent_n)
                        
                        
-############################## subcontinent ####################################
-subcontinent_mu = pd.DataFrame()
-subcontinent_n=pd.DataFrame()
-temp_table_subcontinent = train[['fullVisitorId','geoNetwork.subContinent']]
-mu_dict_subcontinent = dict()
-n_dict_subcontinent = dict()
-for i in train['geoNetwork.subContinent'].unique():
-    mu_dict_subcontinent.update({i:train[train['geoNetwork.subContinent']==i]['totals.totalTransactionRevenue'].mean()})
-    n_dict_subcontinent.update({i:train[train['geoNetwork.subContinent']==i]['totals.totalTransactionRevenue'].count()})
-for i in train['geoNetwork.subContinent'].unique():
-    subcontinent_mu=subcontinent_mu.append(temp_table_subcontinent[temp_table_subcontinent['geoNetwork.subContinent']==i].assign(param=mu_dict_subcontinent[i],ignore_index=True))
-    subcontinent_n=subcontinent_n.append(temp_table_subcontinent[temp_table_subcontinent['geoNetwork.subContinent']==i].assign(param=n_dict_subcontinent[i],ignore_index=True))
 
-subcontinent_mu=subcontinent_mu.set_index("fullVisitorId")['param']
-subcontinent_n=subcontinent_n.set_index("fullVisitorId")['param']
-nus=subcontinent_mu.copy()
-nus.loc[:]=train.shape[0]
-mu0s=subcontinent_mu.copy()
-mu0s.loc[:]=train['totals.totalTransactionRevenue'].mean()                                     
-c=0.1
-temp_subcontinent=(c*nus.multiply(mu0s)+subcontinent_n.multiply(subcontinent_mu)).divide(c*nus+subcontinent_n)
-############################## country ####################################
-country_mu = pd.DataFrame()
-country_n=pd.DataFrame()
-temp_table_country = train[['fullVisitorId','geoNetwork.country']]
-mu_dict_country = dict()
-n_dict_country= dict()
-for i in train['geoNetwork.country'].unique():
-    mu_dict_country.update({i:train[train['geoNetwork.country']==i]['totals.totalTransactionRevenue'].mean()})
-    n_dict_country.update({i:train[train['geoNetwork.country']==i]['totals.totalTransactionRevenue'].count()})
-for i in train['geoNetwork.country'].unique():
-    country_mu=country_mu.append(temp_table_country[temp_table_country['geoNetwork.country']==i].assign(param=mu_dict_country[i],ignore_index=True))
-    country_n=country_n.append(temp_table_country[temp_table_country['geoNetwork.country']==i].assign(param=n_dict_country[i],ignore_index=True))
-
-country_mu=country_mu.set_index("fullVisitorId")['param']
-country_n=country_n.set_index("fullVisitorId")['param']
-nus=country_mu.copy()
-nus.loc[:]=train.shape[0]
-mu0s=country_mu.copy()
-mu0s.loc[:]=train['totals.totalTransactionRevenue'].mean()                                     
-c=0.1
-temp_country=(c*nus.multiply(mu0s)+country_n.multiply(country_mu)).divide(c*nus+country_n)
 
 # page visit number
 ###########################################################################
@@ -135,7 +93,25 @@ temp_country=(c*nus.multiply(mu0s)+country_n.multiply(country_mu)).divide(c*nus+
 ###########################################################################
 ###########################################################################
 
+#construct a data frame with 'fullVistorId' as index and two coulmns: 'pageview': sum of pagevews, 'counts': number of same person. 
+temp = pd.DataFrame({'fullVisitorId':df['fullVisitorId'].values.tolist()})
+temp['counts'] = 1
+temp['pageview'] = df['totals.pageviews']
+temp_table = temp.groupby(['fullVisitorId']).aggregate({'counts':['count'],  'pageview':['sum']})
+temp_table.columns = ['pageview','counts']   
+                       
+#get prior \alpha_0, \beta_0
+(alpha_0, beta_0) = (temp_talbe['counts'].sum()+1, temp_talbe['pageview'].sum()) 
+                       
+#get posterier \alpha, \beta for each user
+gamma = 0.00001  #gamma  weights parameter
+temp_table['beta'] = gamma*beta_0 + temp_table['pageview']  
+temp_table['alpha'] = gamma*alpha_0 + temp_table['counts']  
 
+#get posterior mean for each user
+temp_table['mean'] =  temp_table['beta']/(temp_table['alpha']-1)    #     \alpha>1            
+                       
+                       
 #############################  hits  ##############################
 def get_content(x):
     '''
@@ -190,9 +166,6 @@ temp_table = temp_table + c*alphas.values
 temp_table.iloc[:,:4] = temp_table.iloc[:,:4]/temp_table.iloc[:,:4].sum(axis=1)
 temp_table.iloc[:,4:14] = temp_table.iloc[:,4:14]/temp_table.iloc[:,4:14].sum(axis=1)
 temp_table.iloc[:,14:] = temp_table.iloc[:,14:]/temp_table.iloc[:,14:].sum(axis=1)
-
-
-
 
 ############################ geoNetwork columns  ##############################
 
