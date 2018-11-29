@@ -62,9 +62,9 @@ test['month'] = test['date'].apply(lambda x: (x%10000)//100)
 test['month_index'] = (test['year']-2016)*12 + test['month']
 test['totals.totalTransactionRevenue'] = test['totals.totalTransactionRevenue'].astype(float).fillna(0)
 
-monthly_revenue = train.groupby(['fullVisitorId', 'year', 'month'], as_index=False).aggregate({'totals.totalTransactionRevenue':['sum'],\
-                                                                                               'geoNetwork.country':['unique'],\
-                                                                                               'month_index':['unique']})
+monthly_revenue = test.groupby(['fullVisitorId', 'year', 'month'], as_index=False).aggregate({'totals.totalTransactionRevenue':['sum'],\
+                                                                                              'geoNetwork.country':['unique'],\
+                                                                                              'month_index':['unique']})
 
 monthly_revenue.columns = ['fullVisitorId', 'year', 'month', 'revenue', 'country', 'month_index']
 monthly_revenue['country'] = monthly_revenue['country'].apply(lambda x:x[0])
