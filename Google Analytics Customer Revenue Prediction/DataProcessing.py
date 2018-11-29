@@ -31,32 +31,7 @@ subcontinent_rate = train.groupby(['geoNetwork.subContinent'])['totals.haveReven
 country_value = train.groupby(['geoNetwork.country'])['totals.totalTransactionRevenue'].mean()
 continent_value = train.groupby(['geoNetwork.continent'])['totals.totalTransactionRevenue'].mean()
 subcontinent_value = train.groupby(['geoNetwork.subContinent'])['totals.totalTransactionRevenue'].mean()
-###########################################################################
-###########################################################################
-###                                                                     ###
-###                                                                     ###
-###                  Here is the code for calculating                   ###
-###            posterior MLE of average revenue per puchase             ###
-###                         at different levels                         ###
-###                            Shitong                                  ###
-###                                                                     ###                     
-###########################################################################
-###########################################################################
 
-#def post_est(mu0,nu,x,n,alpha):
-#    return (alpha*nu*mu0+(1-alpha)*n*x)/(alpha*nu+(1-alpha)*n)
-#
-#def post_est_dic(x,alpha):
-#    nu = train.shape[0]
-#    temp_mu = train['geoNetwork.'+x].mean()
-#    temp_post_est = dict()
-#    for i in train['geoNetwork.'+x].unique():
-#        temp = train[train['geoNetwork.'+x]==i]['totals.totalTransactionRevenue']
-#        x_bar = temp.mean()
-#        n_temp = temp.count()
-#        post_temp = post_est(temp_mu,nu,x_bar,n_temp,alpha)
-#        temp_post_est.update({i:post_temp})
-#     return temp_post_est
 continent_mu = pd.DataFrame()
 continent_n=pd.DataFrame()
 temp_table_continent = train[['fullVisitorId','geoNetwork.continent']]
@@ -78,9 +53,6 @@ mu0s.loc[:]=train['totals.totalTransactionRevenue'].mean()
 c=0.1
 temp_continent=(c*nus.multiply(mu0s)+continent_n.multiply(continent_mu)).divide(c*nus+continent_n)
                        
-                       
-
-
 # page visit number
 ###########################################################################
 ###########################################################################
@@ -146,6 +118,8 @@ content3_count = content3_counter.apply(lambda x: [x[key] for key in unique_cont
 train['content1_count'] = content1_count
 train['content2_count'] = content2_count
 train['content3_count'] = content3_count
+train.iloc[:,-3:].to_pickle('Train_content_count.pkl')
+train = train.iloc[:,:-3]
 
 # calculate prior
 temp_table = pd.DataFrame({'fullVisitorId':train['fullVisitorId'].values.tolist()})
@@ -156,10 +130,14 @@ for i in range(len(unique_content2)):
 for i in range(len(unique_content3)):
     temp_table['content3.'+unique_content3[i]] = content3_count.apply(lambda x: x[i])
 
+del content1_count, content2_count, content3_count, unique_content1, unique_content2, unique_content3
+                       
 # get total content counts for each user
 temp_table = temp_table.groupby(['fullVisitorId']).sum()#After this fullVisitorId becomes Index
+temp_table.to_pickle('Train_content_prior.pkl')
 alphas = temp_table.sum()+1 #This is the prior parameters for multinomial 
-
+alphas.to_pickle('content_prior.pkl')
+                       
 # get posterior for everyone
 c = 0.01 #will be tuned in training
 temp_table = temp_table + c*alphas.values
