@@ -43,21 +43,42 @@ subcontinent_value = train.groupby(['geoNetwork.subContinent'])['totals.totalTra
 ###########################################################################
 ###########################################################################
 
-def post_est(mu0,nu,x,n,alpha):
-    return (alpha*nu*mu0+(1-alpha)*n*x)/(alpha*nu+(1-alpha)*n)
+#def post_est(mu0,nu,x,n,alpha):
+#    return (alpha*nu*mu0+(1-alpha)*n*x)/(alpha*nu+(1-alpha)*n)
+#
+#def post_est_dic(x,alpha):
+#    nu = train.shape[0]
+#    temp_mu = train['geoNetwork.'+x].mean()
+#    temp_post_est = dict()
+#    for i in train['geoNetwork.'+x].unique():
+#        temp = train[train['geoNetwork.'+x]==i]['totals.totalTransactionRevenue']
+#        x_bar = temp.mean()
+#        n_temp = temp.count()
+#        post_temp = post_est(temp_mu,nu,x_bar,n_temp,alpha)
+#        temp_post_est.update({i:post_temp})
+#     return temp_post_est
+continent_mu = pd.DataFrame()
+continent_n=pd.DataFrame()
+temp_table_continent = train[['fullVisitorId','geoNetwork.continent']]
+mu_dict_continent = dict()
+n_dict_continent = dict()
+for i in train['geoNetwork.continent'].unique():
+    mu_dict_continent.update({i:train[train['geoNetwork.continent']==i]['totals.totalTransactionRevenue'].mean()})
+    n_dict_continent.update({i:train[train['geoNetwork.continent']==i]['totals.totalTransactionRevenue'].count()})
+for i in train['geoNetwork.continent'].unique():
+    continent_mu=continent_mu.append(temp_table_continent[temp_table_continent['geoNetwork.continent']==i].assign(param=mu_dict_continent[i],ignore_index=True))
+    continent_n=continent_n.append(temp_table_continent[temp_table_continent['geoNetwork.continent']==i].assign(param=n_dict_continent[i],ignore_index=True))
 
-def post_est_dic(x,alpha):
-    nu = train.shape[0]
-    temp_mu = train['geoNetwork.'+x].mean()
-    temp_post_est = dict()
-    for i in train['geoNetwork.'+x].unique():
-        temp = train[train['geoNetwork.'+x]==i]['totals.totalTransactionRevenue']
-        x_bar = temp.mean()
-        n_temp = temp.count()
-        post_temp = post_est(temp_mu,nu,x_bar,n_temp,alpha)
-        temp_post_est.update({i:post_temp})
-     return temp_post_est
-
+continent_mu=continent_mu.set_index("fullVisitorId")['param']
+continent_n=continent_n.set_index("fullVisitorId")['param']
+nus=continent_mu.copy()
+nus.loc[:]=train.shape[0
+mu0s=continent_mu.copy()
+mu0s.loc[:]=train['totals.totalTransactionRevenue'].mean()                                     
+c=0.1
+temp_continent=(c*nus.multiply(mu0s)+continent_n.multiply(continent_mu)).divide(c*nus+continent_n)
+                       
+                       
 
 
 # page visit number
