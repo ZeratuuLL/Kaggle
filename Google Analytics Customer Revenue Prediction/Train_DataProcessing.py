@@ -32,7 +32,7 @@ country_posterior = country_posterior.iloc[:,-2:]
 country_posterior.to_pickle('country_posterior.pkl')
                        
 # page visit number
-#construct a data frame with 'fullVistorId' as index and two coulmns: 'pageview': sum of pagevews, 'counts': number of same person. 
+#construct a data frame with 'fullVistorId' as index and two columns: 'pageview': sum of pageviews, 'counts': number of same person. 
 
 temp = pd.DataFrame({'fullVisitorId':train['fullVisitorId'].values.tolist()})
 temp['counts'] = 1
