@@ -46,6 +46,18 @@ subcontinent_value = train.groupby(['geoNetwork.subContinent'])['totals.totalTra
 def post_est(mu0,nu,x,n,alpha):
     return (alpha*nu*mu0+(1-alpha)*n*x)/(alpha*nu+(1-alpha)*n)
 
+def post_est_dic(x,alpha):
+    nu = train.shape[0]
+    temp_mu = train['geoNetwork.'+x].mean()
+    temp_post_est = dict()
+    for i in train['geoNetwork.'+x].unique():
+        temp = train[train['geoNetwork.'+x]==i]['totals.totalTransactionRevenue']
+        x_bar = temp.mean()
+        n_temp = temp.count()
+        post_temp = temp_post_est(temp_mu,nu,x_bar,n_temp,alpha)
+        temp_post_est.update({i:post_temp})
+     return temp_post_est
+
 
 
 # page visit number
