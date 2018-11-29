@@ -100,23 +100,16 @@ for i in range(len(unique_content2)):
 for i in range(len(unique_content3)):
     temp_table['content3.'+unique_content3[i]] = content3_count.apply(lambda x: x[i])
 
-def weighted_posterior(x, c, values):
-    '''
-    The posterior is estimated by c*prior+observation. The value will be further transformed into probabilities.
-    '''
-    x = x+c*values
-    x[:4] = x[:4]/np.sum(x[:4])
-    x[4:14] = x[:14]/np.sum(x[:14])
-    x[14:] = x[14:]/np.sum(x[14:])
-    return x
-
 # get total content counts for each user
 temp_table = temp_table.groupby(['fullVisitorId']).sum()#After this fullVisitorId becomes Index
 alphas = temp_table.sum()+1 #This is the prior parameters for multinomial 
 
-# get posterior for everyone (find out how to make it faster)
-t1 = time.time();temp_new1 = temp_table.apply(weighted_posterior, c=0.01, values=alphas.values, axis=1);time.time()-t1
-t1 = time.time();temp_new2 = temp_table + c*alphas.values;time.time()-t1
+# get posterior for everyone
+c = 0.01 #will be tuned in training
+temp_table = temp_table + c*alphas.values
+temp_table.iloc[:,:4] = temp_table.iloc[:,:4]/temp_table.iloc[:,:4].sum(axis=1)
+temp_table.iloc[:,4:14] = temp_table.iloc[:,4:14]/temp_table.iloc[:,4:14].sum(axis=1)
+temp_table.iloc[:,14:] = temp_table.iloc[:,14:]/temp_table.iloc[:,14:].sum(axis=1)
 
 ############################ geoNetwork columns  ##############################
 
