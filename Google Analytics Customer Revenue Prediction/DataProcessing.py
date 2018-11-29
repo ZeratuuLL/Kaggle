@@ -57,6 +57,7 @@ subcontinent_value = train.groupby(['geoNetwork.subContinent'])['totals.totalTra
 #        post_temp = post_est(temp_mu,nu,x_bar,n_temp,alpha)
 #        temp_post_est.update({i:post_temp})
 #     return temp_post_est
+############################## continent ####################################
 continent_mu = pd.DataFrame()
 continent_n=pd.DataFrame()
 temp_table_continent = train[['fullVisitorId','geoNetwork.continent']]
@@ -79,7 +80,7 @@ c=0.1
 temp_continent=(c*nus.multiply(mu0s)+continent_n.multiply(continent_mu)).divide(c*nus+continent_n)
                        
                        
-##############################subcontinent####################################
+############################## subcontinent ####################################
 subcontinent_mu = pd.DataFrame()
 subcontinent_n=pd.DataFrame()
 temp_table_subcontinent = train[['fullVisitorId','geoNetwork.subContinent']]
@@ -100,6 +101,27 @@ mu0s=subcontinent_mu.copy()
 mu0s.loc[:]=train['totals.totalTransactionRevenue'].mean()                                     
 c=0.1
 temp_subcontinent=(c*nus.multiply(mu0s)+subcontinent_n.multiply(subcontinent_mu)).divide(c*nus+subcontinent_n)
+############################## country ####################################
+country_mu = pd.DataFrame()
+country_n=pd.DataFrame()
+temp_table_country = train[['fullVisitorId','geoNetwork.country']]
+mu_dict_country = dict()
+n_dict_country= dict()
+for i in train['geoNetwork.country'].unique():
+    mu_dict_country.update({i:train[train['geoNetwork.country']==i]['totals.totalTransactionRevenue'].mean()})
+    n_dict_country.update({i:train[train['geoNetwork.country']==i]['totals.totalTransactionRevenue'].count()})
+for i in train['geoNetwork.country'].unique():
+    country_mu=country_mu.append(temp_table_country[temp_table_country['geoNetwork.country']==i].assign(param=mu_dict_country[i],ignore_index=True))
+    country_n=country_n.append(temp_table_country[temp_table_country['geoNetwork.country']==i].assign(param=n_dict_country[i],ignore_index=True))
+
+country_mu=country_mu.set_index("fullVisitorId")['param']
+country_n=country_n.set_index("fullVisitorId")['param']
+nus=country_mu.copy()
+nus.loc[:]=train.shape[0]
+mu0s=country_mu.copy()
+mu0s.loc[:]=train['totals.totalTransactionRevenue'].mean()                                     
+c=0.1
+temp_country=(c*nus.multiply(mu0s)+country_n.multiply(country_mu)).divide(c*nus+country_n)
 
 # page visit number
 ###########################################################################
