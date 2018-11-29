@@ -40,9 +40,11 @@ temp['pageview'] = train['totals.pageviews'].astype(float).fillna(1)
 temp['pageview'] = np.log(temp['pageview'])
 temp_table = temp.groupby(['fullVisitorId']).aggregate({'counts':['count'],  'pageview':['sum']})
 temp_table.columns = ['counts','pageview']   
+temp_table.to_pickle('pageView_prior.pkl')
                        
 #get prior \alpha_0, \beta_0
 (alpha_0, beta_0) = (temp_table['counts'].sum()+1, temp_table['pageview'].sum()) 
+np.save('pageView.npy',np.array([alpha_0, beta_0]))
                        
 #get posterier \alpha, \beta for each user
 gamma = 0.00001  #gamma  weights parameter
