@@ -54,7 +54,7 @@ def post_est_dic(x,alpha):
         temp = train[train['geoNetwork.'+x]==i]['totals.totalTransactionRevenue']
         x_bar = temp.mean()
         n_temp = temp.count()
-        post_temp = temp_post_est(temp_mu,nu,x_bar,n_temp,alpha)
+        post_temp = post_est(temp_mu,nu,x_bar,n_temp,alpha)
         temp_post_est.update({i:post_temp})
      return temp_post_est
 
