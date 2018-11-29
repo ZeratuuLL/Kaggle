@@ -79,7 +79,27 @@ c=0.1
 temp_continent=(c*nus.multiply(mu0s)+continent_n.multiply(continent_mu)).divide(c*nus+continent_n)
                        
                        
+##############################subcontinent####################################
+subcontinent_mu = pd.DataFrame()
+subcontinent_n=pd.DataFrame()
+temp_table_subcontinent = train[['fullVisitorId','geoNetwork.subContinent']]
+mu_dict_subcontinent = dict()
+n_dict_subcontinent = dict()
+for i in train['geoNetwork.subContinent'].unique():
+    mu_dict_subcontinent.update({i:train[train['geoNetwork.subContinent']==i]['totals.totalTransactionRevenue'].mean()})
+    n_dict_subcontinent.update({i:train[train['geoNetwork.subContinent']==i]['totals.totalTransactionRevenue'].count()})
+for i in train['geoNetwork.subContinent'].unique():
+    subcontinent_mu=subcontinent_mu.append(temp_table_subcontinent[temp_table_subcontinent['geoNetwork.subContinent']==i].assign(param=mu_dict_subcontinent[i],ignore_index=True))
+    subcontinent_n=subcontinent_n.append(temp_table_subcontinent[temp_table_subcontinent['geoNetwork.subContinent']==i].assign(param=n_dict_subcontinent[i],ignore_index=True))
 
+subcontinent_mu=subcontinent_mu.set_index("fullVisitorId")['param']
+subcontinent_n=subcontinent_n.set_index("fullVisitorId")['param']
+nus=subcontinent_mu.copy()
+nus.loc[:]=train.shape[0]
+mu0s=subcontinent_mu.copy()
+mu0s.loc[:]=train['totals.totalTransactionRevenue'].mean()                                     
+c=0.1
+temp_subcontinent=(c*nus.multiply(mu0s)+subcontinent_n.multiply(subcontinent_mu)).divide(c*nus+subcontinent_n)
 
 # page visit number
 ###########################################################################
@@ -148,6 +168,9 @@ temp_table = temp_table + c*alphas.values
 temp_table.iloc[:,:4] = temp_table.iloc[:,:4]/temp_table.iloc[:,:4].sum(axis=1)
 temp_table.iloc[:,4:14] = temp_table.iloc[:,4:14]/temp_table.iloc[:,4:14].sum(axis=1)
 temp_table.iloc[:,14:] = temp_table.iloc[:,14:]/temp_table.iloc[:,14:].sum(axis=1)
+
+
+
 
 ############################ geoNetwork columns  ##############################
 
