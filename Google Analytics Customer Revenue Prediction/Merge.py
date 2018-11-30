@@ -193,7 +193,7 @@ def validate_merge(c1=0.00001, c2=0.01):
     #del month_parameters
     
     validation.set_index('fullVisitorId', inplace=True)
-    validation.drop(['month'], axis=1, inplace=True)
+    validation.drop(['month', 'in_training'], axis=1, inplace=True)
     
     return validation
     
