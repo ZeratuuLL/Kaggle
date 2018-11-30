@@ -80,10 +80,10 @@ def training_merge(c1=0.00001, c2=0.01):
     #join monthly time series prediction
     Training.reset_index(inplace=True)
     Training.drop(['index'], axis=1, inplace=True)
-    Training.set_index('month_index', inplace=True)
-    month_parameters = pd.read_pickle('train_month_parameters.pkl')
-    Training = Training.join(month_parameters)
-    del month_parameters
+    #Training.set_index('month_index', inplace=True)
+    #month_parameters = pd.read_pickle('train_month_parameters.pkl')
+    #Training = Training.join(month_parameters)
+    #del month_parameters
     
     Training.reset_index(inplace=True)
     Training.set_index('fullVisitorId', inplace=True)
@@ -188,10 +188,10 @@ def validate_merge(c1=0.00001, c2=0.01):
     #join monthly time series prediction
     validation.reset_index(inplace=True)
     validation.drop(['index'], axis=1, inplace=True)
-    validation.set_index('month_index', inplace=True)
-    month_parameters = pd.read_pickle('train_month_parameters.pkl')
-    validation = validation.join(month_parameters)
-    del month_parameters
+    #validation.set_index('month_index', inplace=True)
+    #month_parameters = pd.read_pickle('train_month_parameters.pkl')
+    #validation = validation.join(month_parameters)
+    #del month_parameters
     
     validation.reset_index(inplace=True)
     validation.set_index('fullVisitorId', inplace=True)
@@ -278,10 +278,10 @@ def full_merge(c1=0.00001, c2=0.01):
     #join monthly time series prediction
     Full.reset_index(inplace=True)
     Full.drop(['index'], axis=1, inplace=True)
-    Full.set_index('month_index', inplace=True)
-    month_parameters = pd.read_pickle('full_month_parameters.pkl')
-    Training = Training.join(month_parameters)
-    del month_parameters
+    #Full.set_index('month_index', inplace=True)
+    #month_parameters = pd.read_pickle('full_month_parameters.pkl')
+    #Training = Training.join(month_parameters)
+    #del month_parameters
     
     Full.reset_index(inplace=True)
     Full.set_index('fullVisitorId', inplace=True)
