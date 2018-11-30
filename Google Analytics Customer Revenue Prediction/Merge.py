@@ -101,8 +101,8 @@ def validate_merge(c1=0.00001, c2=0.01):
     In_Training = pd.read_pickle('Test_in_Train.pkl')
     
     validation = pd.read_pickle('Testing_Base.pkl')
-    validation = validation.join(In_Training)
     validation.set_index('fullVisitorId', inplace=True)
+    validation = validation.join(In_Training)
     
     months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
     validation['month_category'] = validation['month'].apply(lambda x: months[x-1])
