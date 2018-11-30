@@ -182,6 +182,8 @@ def validate_merge(c1=0.00001, c2=0.01):
     country['country_param2'] = (c2*alpha+country['raten'])/(c2*alpha+c2*beta+country['raten'])
     country = country.iloc[:,-2:]
     validation = validation.join(country)
+    validation.loc['Palau','country_param1'] = mu0
+    validation.loc['Palau','country_param2'] = alpha/(alpha + beta)
     del country
     
     #join monthly time series prediction
