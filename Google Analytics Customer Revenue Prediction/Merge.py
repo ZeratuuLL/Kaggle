@@ -99,8 +99,8 @@ def validate_merge(c1=0.00001, c2=0.01):
     In_Training = pd.read_pickle('Test_in_Train.pkl')
     
     validation = pd.read_pickle('Testing_Base.pkl')
-    validation.reset_index(inplace=True)
-    IDs = validation['fullVisitorId']
+    validation.set_index('fullVisitorId', inplace=True)
+    validation = validation.join(In_Training]
     
     months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
     validation['month_category'] = validation['month'].apply(lambda x: months[x-1])
@@ -109,7 +109,6 @@ def validate_merge(c1=0.00001, c2=0.01):
     
     #join browser information
     ID_Browser = pd.read_pickle('train_ID_Browser.pkl')
-    validation.set_index('fullVisitorId', inplace=True)
     validation = validation.join(ID_Browser)
     validation.iloc[:,:][not In_Training] = ID_Browser[0]
     del ID_Browser
@@ -132,7 +131,7 @@ def validate_merge(c1=0.00001, c2=0.01):
         ratio = content.iloc[:,i]/temp_sum
         content.iloc[:,i] = ratio
     validation = validation.join(content)
-    validation.iloc[:,:][not In_Training] = alphas
+    validation.iloc[:,-17:][validation['in_training']==False] = alphas
     del content, temp_sum
     
     #join mobile information
