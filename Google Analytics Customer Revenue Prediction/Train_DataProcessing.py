@@ -15,14 +15,14 @@ train['totals.haveRevenue'] = train['totals.totalTransactionRevenue']>0
 country_prior = train.groupby(['geoNetwork.country']).aggregate({'totals.totalTransactionRevenue':['mean','count'],\
                                                                  'totals.haveRevenue':['sum']})
 country_prior.columns=['mu','n','raten']
-country_prior.to_pickle('country_prior.pkl')
+country_prior.to_pickle('train_country_prior.pkl')
 
 nu=train.shape[0]
 mu0=train['totals.totalTransactionRevenue'].mean()    
 alpha = train['totals.haveRevenue'].sum()+1
 beta = train.shape[0]+2-alpha
 country_parameters=np.array([nu, mu0, alpha, beta])
-np.save('country_parameters.npy',country_parameters)
+np.save('train_country_parameters.npy',country_parameters)
 
 c=0.01
 country_posterior = country_prior.copy()
@@ -40,11 +40,11 @@ temp['pageview'] = train['totals.pageviews'].astype(float).fillna(1)
 temp['pageview'] = np.log(temp['pageview'])
 temp_table = temp.groupby(['fullVisitorId']).aggregate({'counts':['count'],  'pageview':['sum']})
 temp_table.columns = ['counts','pageview']   
-temp_table.to_pickle('pageView_prior.pkl')
+temp_table.to_pickle('train_pageView_prior.pkl')
                        
 #get prior \alpha_0, \beta_0
 (alpha_0, beta_0) = (temp_table['counts'].sum()+1, temp_table['pageview'].sum()) 
-np.save('pageView.npy',np.array([alpha_0, beta_0]))
+np.save('train_pageView.npy',np.array([alpha_0, beta_0]))
                        
 #get posterier \alpha, \beta for each user
 gamma = 0.00001  #gamma  weights parameter
@@ -85,13 +85,6 @@ content1_count = content1_counter.apply(lambda x: [x[key] for key in unique_cont
 content2_count = content2_counter.apply(lambda x: [x[key] for key in unique_content2])
 content3_count = content3_counter.apply(lambda x: [x[key] for key in unique_content3])
 
-# add into DataFrame
-train['content1_count'] = content1_count
-train['content2_count'] = content2_count
-train['content3_count'] = content3_count
-train.iloc[:,-3:].to_pickle('Train_content_count.pkl')
-train = train.iloc[:,:-3]
-
 # calculate prior
 temp_table = pd.DataFrame({'fullVisitorId':train['fullVisitorId'].values.tolist()})
 for i in range(len(unique_content1)):
@@ -105,9 +98,9 @@ del content1_count, content2_count, content3_count, unique_content1, unique_cont
                        
 # get total content counts for each user
 temp_table = temp_table.groupby(['fullVisitorId']).sum()#After this fullVisitorId becomes Index
-temp_table.to_pickle('content_prior.pkl')
+temp_table.to_pickle('train_content_prior.pkl')
 alphas = temp_table.sum()+1 #This is the prior parameters for multinomial 
-alphas.to_pickle('content_alphas.pkl')
+alphas.to_pickle('train_content_alphas.pkl')
                        
 # get posterior for everyone
 c = 0.01 #will be tuned in training
@@ -132,13 +125,13 @@ del temp_table
 train['browser'] = train['device.device'].apply(lambda x:x['browser'])
 browser_counter = Counter(train['browser'])
 common_browsers = [key for key in browser_counter.keys() if browser_counter[key]>1000]
-np.save('common_browsers.npy',common_browsers)
+np.save('train_common_browsers.npy',common_browsers)
 
 train['browser'] = train['browser'].apply(lambda x: x if x in common_browsers else 'Other')
 temp_table = pd.crosstab(train['fullVisitorId'],train['browser'])
 ID_Browser = temp_table.idxmax(axis=1)
 ID_Browser = pd.get_dummies(ID_Browser)
-ID_Browser.to_pickle('ID_Browser.pkl')
+ID_Browser.to_pickle('train_ID_Browser.pkl')
 
 ############################ isMobile ##############################
 train['mobile'] = train['device.device'].apply(lambda x:x['isMobile']).astype(float)
@@ -149,11 +142,11 @@ alpha = train['mobile'].sum()+1
 beta = train.shape[0]+2-alpha
 mobile_parameters = np.array([alpha, beta])
 np.save('mobile_parameters.npy', mobile_parameters)
-temp_table.to_pickle('mobile_prior.pkl')
+temp_table.to_pickle('train_mobile_prior.pkl')
 
 c=0.01
 temp_table['mobile'] = (c*alpha+temp_table['s'])/(c*alpha+c*beta+temp_table['n'])
-temp_table['mobile'].to_pickle('mobile_posterior.pkl')
+temp_table['mobile'].to_pickle('train_mobile_posterior.pkl')
 
 ############################ others  ##############################
 train['year'] = train['date'].apply(lambda x: x//10000)
@@ -167,7 +160,7 @@ temp_table.columns = ['total_revenue','count','rate']
 temp_table['average_revenue'] = temp_table['total_revenue']/(temp_table['count']+0.001)
 temp_table['total_revenue'] = temp_table['total_revenue'].apply(lambda x:np.log(x+1))
 temp_table['average_revenue'] = temp_table['average_revenue'].apply(lambda x:np.log(x+1))
-temp_table.to_pickle('monthly_summary.pkl')
+temp_table.to_pickle('train_monthly_summary.pkl')
 # Now wait for time series analysis
 
 def get_time_length(x):
@@ -185,8 +178,9 @@ def average_length(x):
       
 train['average_time'] = temp.apply(average_length)/int(1e5)
 train['average_time'] = train['average_time'].fillna(train['average_time'].sum()/(train['average_time'].shape[0]-train['average_time'].apply(np.isnan).sum()))
-temp_table = train.groupby(['fullVisitorId'])['average_time'].mean()
-temp_table.to_pickle('Train_VisitLength.pkl')
+temp_table = train.groupby(['fullVisitorId']).aggregate({'average_time':['mean']})
+temp_table.columns = ['average_time']
+temp_table.to_pickle('train_VisitLength.pkl')
 
 monthly_revenue = train.groupby(['fullVisitorId', 'year', 'month'], as_index=False).aggregate({'totals.totalTransactionRevenue':['sum'],\
                                                                                                'geoNetwork.country':['unique'],\
