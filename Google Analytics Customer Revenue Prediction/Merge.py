@@ -87,7 +87,6 @@ def training_merge(c1=0.00001, c2=0.01):
     
     Training.reset_index(inplace=True)
     Training.set_index('fullVisitorId', inplace=True)
-    Training.drop(['month_index', 'month'], axis=1, inplace=True)
     
     return Training
     
@@ -194,8 +193,9 @@ def validate_merge(c1=0.00001, c2=0.01):
     #validation = validation.join(month_parameters)
     #del month_parameters
     
+    validation.reset_index(inplace=True)
     validation.set_index('fullVisitorId', inplace=True)
-    validation.drop(['month', 'in_training'], axis=1, inplace=True)
+    validation.drop(['in_training'], axis=1, inplace=True)
     
     return validation
     
