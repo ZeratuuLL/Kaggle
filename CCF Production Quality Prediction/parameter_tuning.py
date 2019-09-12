@@ -242,10 +242,10 @@ index = xgb_cv2.best_index_
 my_print(xgb_cv2.cv_results_['mean_test_accuracy'][index], 
  xgb_cv2.cv_results_['mean_test_neg_log_loss'][index], 
  xgb_cv2.best_params_,
- [xgb_cv2.cv_results_['mean_train_accuracy'][xgb_cv2.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)],
- [xgb_cv2.cv_results_['mean_test_accuracy'][xgb_cv2.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)],
- [xgb_cv2.cv_results_['mean_train_neg_log_loss'][xgb_cv2.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)],
- [xgb_cv2.cv_results_['mean_test_neg_log_loss'][xgb_cv2.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)])
+ [xgb_cv2.cv_results_['mean_train_accuracy'][xgb_cv2.cv_results_['rank_test_neg_log_loss']==i] for i in range(1, 6)],
+ [xgb_cv2.cv_results_['mean_test_accuracy'][xgb_cv2.cv_results_['rank_test_neg_log_loss']==i] for i in range(1, 6)],
+ [xgb_cv2.cv_results_['mean_train_neg_log_loss'][xgb_cv2.cv_results_['rank_test_neg_log_loss']==i] for i in range(1, 6)],
+ [xgb_cv2.cv_results_['mean_test_neg_log_loss'][xgb_cv2.cv_results_['rank_test_neg_log_loss']==i] for i in range(1, 6)])
 xgb_prediction(xgb_cv2.best_params_)
 submission('XGB_LogLoss_No.csv')
 
@@ -288,10 +288,10 @@ index = cat_cv2.best_index_
 my_print(cat_cv2.cv_results_['mean_test_accuracy'][index], 
  cat_cv2.cv_results_['mean_test_neg_log_loss'][index], 
  cat_cv2.best_params_,
- [cat_cv2.cv_results_['mean_train_accuracy'][cat_cv2.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)],
- [cat_cv2.cv_results_['mean_test_accuracy'][cat_cv2.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)],
- [cat_cv2.cv_results_['mean_train_neg_log_loss'][cat_cv2.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)],
- [cat_cv2.cv_results_['mean_test_neg_log_loss'][cat_cv2.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)])
+ [cat_cv2.cv_results_['mean_train_accuracy'][cat_cv2.cv_results_['rank_test_neg_log_loss']==i] for i in range(1, 6)],
+ [cat_cv2.cv_results_['mean_test_accuracy'][cat_cv2.cv_results_['rank_test_neg_log_loss']==i] for i in range(1, 6)],
+ [cat_cv2.cv_results_['mean_train_neg_log_loss'][cat_cv2.cv_results_['rank_test_neg_log_loss']==i] for i in range(1, 6)],
+ [cat_cv2.cv_results_['mean_test_neg_log_loss'][cat_cv2.cv_results_['rank_test_neg_log_loss']==i] for i in range(1, 6)])
 cat_prediction(cat_cv2.best_params_)
 submission('CAT_LogLoss_No.csv')
 
@@ -336,10 +336,10 @@ index = light_cv2.best_index_
 my_print(light_cv2.cv_results_['mean_test_accuracy'][index], 
  light_cv2.cv_results_['mean_test_neg_log_loss'][index], 
  light_cv2.best_params_,
- [light_cv2.cv_results_['mean_train_accuracy'][clight_cv2.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)],
- [clight_cv2.cv_results_['mean_test_accuracy'][light_cv2.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)],
- [light_cv2.cv_results_['mean_train_neg_log_loss'][light_cv2.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)],
- [light_cv2.cv_results_['mean_test_neg_log_loss'][light_cv2.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)])
+ [light_cv2.cv_results_['mean_train_accuracy'][clight_cv2.cv_results_['rank_test_neg_log_loss']==i] for i in range(1, 6)],
+ [clight_cv2.cv_results_['mean_test_accuracy'][light_cv2.cv_results_['rank_test_neg_log_loss']==i] for i in range(1, 6)],
+ [light_cv2.cv_results_['mean_train_neg_log_loss'][light_cv2.cv_results_['rank_test_neg_log_loss']==i] for i in range(1, 6)],
+ [light_cv2.cv_results_['mean_test_neg_log_loss'][light_cv2.cv_results_['rank_test_neg_log_loss']==i] for i in range(1, 6)])
 light_prediction(lightlight_cv2.best_params_)
 submission('LIGHT_LogLoss_No.csv')
 
