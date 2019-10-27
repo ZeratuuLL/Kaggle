@@ -7,17 +7,19 @@ warnings.filterwarnings("ignore")
 from xgboost import XGBClassifier
 from catboost import CatBoostClassifier
 from lightgbm import LGBMClassifier
+from sklearn.decomposition import PCA
 
-text_file=open('training.log','w')
-NJOBS = 3
+text_file=open('training.txt','w')
+NJOBS = 10
 N_ESTIMATOR = [100, 200, 300, 400, 500, 800, 1000]
-MAX_DEPTH = [5, 6, 7, 8, 9, 10]
-LEARNING_RATE = [0.05, 0.01, 0.005]
-ITERATIONS = [1500, 1750, 2000, 2250, 2500]
+MAX_DEPTH = [9, 10, 11]
+LEARNING_RATE = [0.02, 0.01, 0.005, 0.0025]
+ITERATIONS = [1750, 2000, 2250 ,2500]
 BOOSTING = ['gbdt', 'goss']
 
 training = pd.read_csv('first_round_training_data.csv')
 testing = pd.read_csv('first_round_testing_data.csv')
+pca = PCA()
 
 code = {'Pass':1, 'Good':2, 'Excellent':3, 'Fail':0}
 training['new_Quality'] = training['Quality_label'].apply(lambda x : code[x])
@@ -34,6 +36,12 @@ cat_estimator = CatBoostClassifier(loss_function='MultiClass', silent=True)
 common_cv = StratifiedKFold(n_splits=10, shuffle=True, random_state=302)
 
 features = ['Parameter' + str(i) for i in [5, 7, 8, 9, 10]]
+training[features] = np.log(training[features].values.copy())
+testing[features] = np.log(testing[features].values.copy())
+new_values = pca.fit_transform(pd.concat([training[features], testing[features]]))
+training[features] = new_values[:6000, :].copy()
+testing[features] = new_values[6000:, :].copy()
+features = features[:5]
 
 def my_print(a1, a2, a3, a4, a5, a6, a7):
     text_file.write('The best test accuracy is {}\n'.format(a1))
@@ -114,29 +122,7 @@ def cat_prediction(params):
     testing['prob_Good'] = 0
     testing['prob_Excellent'] = 0
     testing.loc[:,['prob_Fail','prob_Pass','prob_Good','prob_Excellent']] = probs
-
-text_file.write('Random Forest Accuracy\n')
-parameters = {'n_estimators':N_ESTIMATOR, 
-              'max_depth':MAX_DEPTH, 
-              'criterion':['gini', 'entropy']}
-random_forest_cv1 = GridSearchCV(cv=10,
-                                estimator=randomforest_estimator,
-                                param_grid=parameters,
-                                scoring=['accuracy', 'neg_log_loss'],
-                                refit='accuracy',
-                                n_jobs=NJOBS)
-random_forest_cv1.fit(training[features], training['new_Quality'])
-index = random_forest_cv1.best_index_
-my_print(random_forest_cv1.cv_results_['mean_test_accuracy'][index], 
- random_forest_cv1.cv_results_['mean_test_neg_log_loss'][index], 
- random_forest_cv1.best_params_,
- [random_forest_cv1.cv_results_['mean_train_accuracy'][random_forest_cv1.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)],
- [random_forest_cv1.cv_results_['mean_test_accuracy'][random_forest_cv1.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)],
- [random_forest_cv1.cv_results_['mean_train_neg_log_loss'][random_forest_cv1.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)],
- [random_forest_cv1.cv_results_['mean_test_neg_log_loss'][random_forest_cv1.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)])
-randomforest_prediction(random_forest_cv1.best_params_)
-submission('RF_Accuracy_NO.csv')
-
+'''
 text_file.write('\n\nRandom Forest Log Loss\n')
 parameters = {'n_estimators':N_ESTIMATOR, 
               'max_depth':MAX_DEPTH, 
@@ -158,28 +144,6 @@ my_print(random_forest_cv2.cv_results_['mean_test_accuracy'][index],
  [random_forest_cv2.cv_results_['mean_test_neg_log_loss'][random_forest_cv2.cv_results_['rank_test_neg_log_loss']==i] for i in range(1, 6)])
 randomforest_prediction(random_forest_cv2.best_params_)
 submission('RF_LogLoss_NO.csv') 
-
-text_file.write('\n\nGBT Accuracy\n')
-parameters = {'learning_rate':LEARNING_RATE,
-              'n_estimators':N_ESTIMATOR,
-              'max_depth':MAX_DEPTH}
-GBT_cv1 = GridSearchCV(cv=10,
-                      estimator=GBT_estimator,
-                      param_grid=parameters,
-                      scoring=['accuracy', 'neg_log_loss'],
-                      refit='accuracy',
-                      n_jobs=NJOBS)
-GBT_cv1.fit(training[features], training['new_Quality'])
-index = GBT_cv1.best_index_
-my_print(GBT_cv1.cv_results_['mean_test_accuracy'][index], 
- GBT_cv1.cv_results_['mean_test_neg_log_loss'][index], 
- GBT_cv1.best_params_,
- [GBT_cv1.cv_results_['mean_train_accuracy'][GBT_cv1.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)],
- [GBT_cv1.cv_results_['mean_test_accuracy'][GBT_cv1.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)],
- [GBT_cv1.cv_results_['mean_train_neg_log_loss'][GBT_cv1.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)],
- [GBT_cv1.cv_results_['mean_test_neg_log_loss'][GBT_cv1.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)])
-gradientboostingtree_prediction(GBT_cv1.best_params_)
-submission('GBT_Accuracy_NO.csv') 
 
 text_file.write('\n\nGBT Log Loss\n')
 parameters = {'learning_rate':LEARNING_RATE,
@@ -203,29 +167,6 @@ my_print(GBT_cv2.cv_results_['mean_test_accuracy'][index],
 gradientboostingtree_prediction(GBT_cv2.best_params_)
 submission('GBT_LogLoss_NO.csv')
 
-text_file.write('\n\nXGB Accuracy\n')
-parameters = {'learning_rate':LEARNING_RATE,
-              'n_estimators':N_ESTIMATOR,
-              'max_depth':MAX_DEPTH}
-xgb_cv1 = GridSearchCV(cv=common_cv,
-                       estimator=xgb_estimator,
-                       param_grid=parameters,
-                       scoring=['accuracy', 'neg_log_loss'],
-                       refit='accuracy',
-                       verbose=0,
-                       n_jobs=NJOBS)
-xgb_cv1.fit(training[features], training['new_Quality'])
-index = xgb_cv1.best_index_
-my_print(xgb_cv1.cv_results_['mean_test_accuracy'][index], 
- xgb_cv1.cv_results_['mean_test_neg_log_loss'][index], 
- xgb_cv1.best_params_,
- [xgb_cv1.cv_results_['mean_train_accuracy'][xgb_cv1.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)],
- [xgb_cv1.cv_results_['mean_test_accuracy'][xgb_cv1.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)],
- [xgb_cv1.cv_results_['mean_train_neg_log_loss'][xgb_cv1.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)],
- [xgb_cv1.cv_results_['mean_test_neg_log_loss'][xgb_cv1.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)])
-xgb_prediction(xgb_cv1.best_params_)
-submission('XGB_Auucracy_No.csv')
-
 text_file.write('\n\nXGB Log Loss\n')
 parameters = {'learning_rate':LEARNING_RATE,
               'n_estimators':N_ESTIMATOR,
@@ -248,30 +189,7 @@ my_print(xgb_cv2.cv_results_['mean_test_accuracy'][index],
  [xgb_cv2.cv_results_['mean_test_neg_log_loss'][xgb_cv2.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)])
 xgb_prediction(xgb_cv2.best_params_)
 submission('XGB_LogLoss_No.csv')
-
-text_file.write('\n\nCAT Accuracy\n')
-parameters = {'learning_rate':LEARNING_RATE,
-              'iterations':ITERATIONS,
-              'depth':MAX_DEPTH}
-cat_cv1 = GridSearchCV(cv=common_cv,
-                       estimator=cat_estimator,
-                       param_grid=parameters,
-                       scoring=['accuracy', 'neg_log_loss'],
-                       refit='accuracy',
-                       verbose=0,
-                       n_jobs=NJOBS)
-cat_cv1.fit(training[features], training['new_Quality'])
-index = cat_cv1.best_index_
-my_print(cat_cv1.cv_results_['mean_test_accuracy'][index], 
- cat_cv1.cv_results_['mean_test_neg_log_loss'][index], 
- cat_cv1.best_params_,
- [cat_cv1.cv_results_['mean_train_accuracy'][cat_cv1.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)],
- [cat_cv1.cv_results_['mean_test_accuracy'][cat_cv1.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)],
- [cat_cv1.cv_results_['mean_train_neg_log_loss'][cat_cv1.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)],
- [cat_cv1.cv_results_['mean_test_neg_log_loss'][cat_cv1.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)])
-cat_prediction(cat_cv1.best_params_)
-submission('CAT_Accuracy_No.csv')
-
+'''
 text_file.write('\n\nCAT LogLoss\n')
 parameters = {'learning_rate':LEARNING_RATE,
               'iterations':ITERATIONS,
@@ -294,36 +212,12 @@ my_print(cat_cv2.cv_results_['mean_test_accuracy'][index],
  [cat_cv2.cv_results_['mean_test_neg_log_loss'][cat_cv2.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)])
 cat_prediction(cat_cv2.best_params_)
 submission('CAT_LogLoss_No.csv')
-
-text_file.write('\n\nLight Accuracy\n')
-parameters = {'learning_rate':LEARNING_RATE,
-              'n_estimators':ITERATIONS,
-              'max_depth':MAX_DEPTH,
-              'boosting_type':BOOSTING}
-light_cv1 = GridSearchCV(cv=common_cv,
-                       estimator=light_estimator,
-                       param_grid=parameters,
-                       scoring=['accuracy', 'neg_log_loss'],
-                       refit='accuracy',
-                       verbose=0,
-                       n_jobs=NJOBS)
-light_cv1.fit(training[features], training['new_Quality'])
-index = light_cv1.best_index_
-my_print(light_cv1.cv_results_['mean_test_accuracy'][index], 
- light_cv1.cv_results_['mean_test_neg_log_loss'][index], 
- light_cv1.best_params_,
- [light_cv1.cv_results_['mean_train_accuracy'][clight_cv1.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)],
- [clight_cv1.cv_results_['mean_test_accuracy'][light_cv1.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)],
- [light_cv1.cv_results_['mean_train_neg_log_loss'][light_cv1.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)],
- [light_cv1.cv_results_['mean_test_neg_log_loss'][light_cv1.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)])
-light_prediction(lightlight_cv1.best_params_)
-submission('LIGHT_Accuracy_No.csv')
-
-text_file.write('\n\nLight Accuracy\n')
-parameters = {'learning_rate':LEARNING_RATE,
-              'n_estimators':ITERATIONS,
-              'max_depth':MAX_DEPTH,
-              'boosting_type':BOOSTING}
+'''
+text_file.write('\n\nLight LogLoss\n')
+parameters = {'learning_rate':[0.1, 0.05, 0.01, 0.005, 0.001],
+              'n_estimators':[500, 750, 1000, 1250, 1500, 1750, 2000],
+              'max_depth':[1, 2, 3, 4, 5, 6],
+              'boosting_type':['goss']}
 light_cv2 = GridSearchCV(cv=common_cv,
                        estimator=light_estimator,
                        param_grid=parameters,
@@ -336,12 +230,12 @@ index = light_cv2.best_index_
 my_print(light_cv2.cv_results_['mean_test_accuracy'][index], 
  light_cv2.cv_results_['mean_test_neg_log_loss'][index], 
  light_cv2.best_params_,
- [light_cv2.cv_results_['mean_train_accuracy'][clight_cv2.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)],
- [clight_cv2.cv_results_['mean_test_accuracy'][light_cv2.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)],
+ [light_cv2.cv_results_['mean_train_accuracy'][light_cv2.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)],
+ [light_cv2.cv_results_['mean_test_accuracy'][light_cv2.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)],
  [light_cv2.cv_results_['mean_train_neg_log_loss'][light_cv2.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)],
  [light_cv2.cv_results_['mean_test_neg_log_loss'][light_cv2.cv_results_['rank_test_accuracy']==i] for i in range(1, 6)])
-light_prediction(lightlight_cv2.best_params_)
+light_prediction(light_cv2.best_params_)
 submission('LIGHT_LogLoss_No.csv')
-
+'''
 
 text_file.close()

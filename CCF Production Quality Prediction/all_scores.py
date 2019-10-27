@@ -21,10 +21,10 @@ import matplotlib.pyplot as plt
 
 pca = PCA()
 
-MAX_DEPTH = [2, 3, 4, 6, 8, 10]
-LEARNING_RATE = [0.1, 0.005, 0.001, 0.0005]
-MIN_SAMPLE_IN_LEAF = [4, 8, 12, 16, 20]
-L2_NORM = [0, 5, 10]
+MAX_DEPTH = [4, 6, 8, 10]
+LEARNING_RATE = [0.1, 0.05, 0.01, 0.005]
+MIN_SAMPLE_IN_LEAF = [10]
+L2_NORM = [0, 10, 20, 30]
 L1 = len(MAX_DEPTH)
 L2 = len(LEARNING_RATE)
 L3 = len(MIN_SAMPLE_IN_LEAF)
@@ -243,12 +243,12 @@ results = pd.DataFrame(data=results, columns=['train_neg_log_loss_mean',
                                               'best_iterations_std'])
 results.to_pickle(filename+'.pkl')
 
-print('Target Mean Encoding, PCA, 9 components,0.913')
+print('Target Mean Encoding, PCA, 11 components, 0.950')
 train_all, test_all, new_features = get_all_encoding(training, testing, features)
 new_values = pca.fit_transform(pd.concat([train_all[new_features], test_all[new_features]]))
 train_all[new_features] = new_values[:6000, :].copy()
 test_all[new_features] = new_values[6000:, :].copy()
-new_features = new_features[:9]
+new_features = new_features[:11]
 filename = 'Target_Mean_Encoding_{}'.format(len(new_features))
 results = np.zeros((L1*L2*L3*L4, 16))
 for i in tqdm(range(L1*L2*L3*L4)):
@@ -271,12 +271,68 @@ results = pd.DataFrame(data=results, columns=['train_neg_log_loss_mean',
                                               'best_iterations_std'])
 results.to_pickle(filename+'.pkl')
 
-print('Target Mean Encoding, PCA, 11 components, 0.950')
+print('Weight Of Evidence Encoding, PCA, 13 components, 0.958')
+train_all, test_all, new_features = get_all_WoE(training, testing, features)
+new_values = pca.fit_transform(pd.concat([train_all[new_features], test_all[new_features]]))
+train_all[new_features] = new_values[:6000, :].copy()
+test_all[new_features] = new_values[6000:, :].copy()
+new_features = new_features[:13]
+filename = 'Weight_of_Evidence_{}'.format(len(new_features))
+results = np.zeros((L1*L2*L3*L4, 16))
+for i in tqdm(range(L1*L2*L3*L4)):
+    results[i, :] = my_CV(i)
+results = pd.DataFrame(data=results, columns=['train_neg_log_loss_mean', 
+                                              'train_neg_log_loss_std', 
+                                              'train_accuracy_mean', 
+                                              'train_accuracy_std', 
+                                              'validate_neg_log_loss', 
+                                              'validate_accuracy', 
+                                              'validate_offline_score_mean',
+                                              'validate_offline_score_rounded',
+                                              'validate_offline_score_std',
+                                              'validate_offline_score_range',
+                                              'Iterations',
+                                              'depth',
+                                              'learning_rate',
+                                              'l2_norm',
+                                              'best_iterations_mean',
+                                              'best_iterations_std'])
+results.to_pickle(filename+'.pkl')
+
+print('Weight Of Evidence Encoding, PCA, 17 components, 0.989')
+train_all, test_all, new_features = get_all_WoE(training, testing, features)
+new_values = pca.fit_transform(pd.concat([train_all[new_features], test_all[new_features]]))
+train_all[new_features] = new_values[:6000, :].copy()
+test_all[new_features] = new_values[6000:, :].copy()
+new_features = new_features[:17]
+filename = 'Weight_of_Evidence_{}'.format(len(new_features))
+results = np.zeros((L1*L2*L3*L4, 16))
+for i in tqdm(range(L1*L2*L3*L4)):
+    results[i, :] = my_CV(i)
+results = pd.DataFrame(data=results, columns=['train_neg_log_loss_mean', 
+                                              'train_neg_log_loss_std', 
+                                              'train_accuracy_mean', 
+                                              'train_accuracy_std', 
+                                              'validate_neg_log_loss', 
+                                              'validate_accuracy', 
+                                              'validate_offline_score_mean',
+                                              'validate_offline_score_rounded',
+                                              'validate_offline_score_std',
+                                              'validate_offline_score_range',
+                                              'Iterations',
+                                              'depth',
+                                              'learning_rate',
+                                              'l2_norm',
+                                              'best_iterations_mean',
+                                              'best_iterations_std'])
+results.to_pickle(filename+'.pkl')
+
+print('Target Mean Encoding, PCA, 9 components,0.913')
 train_all, test_all, new_features = get_all_encoding(training, testing, features)
 new_values = pca.fit_transform(pd.concat([train_all[new_features], test_all[new_features]]))
 train_all[new_features] = new_values[:6000, :].copy()
 test_all[new_features] = new_values[6000:, :].copy()
-new_features = new_features[:11]
+new_features = new_features[:9]
 filename = 'Target_Mean_Encoding_{}'.format(len(new_features))
 results = np.zeros((L1*L2*L3*L4, 16))
 for i in tqdm(range(L1*L2*L3*L4)):
@@ -333,62 +389,6 @@ new_values = pca.fit_transform(pd.concat([train_all[new_features], test_all[new_
 train_all[new_features] = new_values[:6000, :].copy()
 test_all[new_features] = new_values[6000:, :].copy()
 new_features = new_features[:10]
-filename = 'Weight_of_Evidence_{}'.format(len(new_features))
-results = np.zeros((L1*L2*L3*L4, 16))
-for i in tqdm(range(L1*L2*L3*L4)):
-    results[i, :] = my_CV(i)
-results = pd.DataFrame(data=results, columns=['train_neg_log_loss_mean', 
-                                              'train_neg_log_loss_std', 
-                                              'train_accuracy_mean', 
-                                              'train_accuracy_std', 
-                                              'validate_neg_log_loss', 
-                                              'validate_accuracy', 
-                                              'validate_offline_score_mean',
-                                              'validate_offline_score_rounded',
-                                              'validate_offline_score_std',
-                                              'validate_offline_score_range',
-                                              'Iterations',
-                                              'depth',
-                                              'learning_rate',
-                                              'l2_norm',
-                                              'best_iterations_mean',
-                                              'best_iterations_std'])
-results.to_pickle(filename+'.pkl')
-
-print('Weight Of Evidence Encoding, PCA, 13 components, 0.958')
-train_all, test_all, new_features = get_all_WoE(training, testing, features)
-new_values = pca.fit_transform(pd.concat([train_all[new_features], test_all[new_features]]))
-train_all[new_features] = new_values[:6000, :].copy()
-test_all[new_features] = new_values[6000:, :].copy()
-new_features = new_features[:13]
-filename = 'Weight_of_Evidence_{}'.format(len(new_features))
-results = np.zeros((L1*L2*L3*L4, 16))
-for i in tqdm(range(L1*L2*L3*L4)):
-    results[i, :] = my_CV(i)
-results = pd.DataFrame(data=results, columns=['train_neg_log_loss_mean', 
-                                              'train_neg_log_loss_std', 
-                                              'train_accuracy_mean', 
-                                              'train_accuracy_std', 
-                                              'validate_neg_log_loss', 
-                                              'validate_accuracy', 
-                                              'validate_offline_score_mean',
-                                              'validate_offline_score_rounded',
-                                              'validate_offline_score_std',
-                                              'validate_offline_score_range',
-                                              'Iterations',
-                                              'depth',
-                                              'learning_rate',
-                                              'l2_norm',
-                                              'best_iterations_mean',
-                                              'best_iterations_std'])
-results.to_pickle(filename+'.pkl')
-
-print('Weight Of Evidence Encoding, PCA, 17 components, 0.989')
-train_all, test_all, new_features = get_all_WoE(training, testing, features)
-new_values = pca.fit_transform(pd.concat([train_all[new_features], test_all[new_features]]))
-train_all[new_features] = new_values[:6000, :].copy()
-test_all[new_features] = new_values[6000:, :].copy()
-new_features = new_features[:17]
 filename = 'Weight_of_Evidence_{}'.format(len(new_features))
 results = np.zeros((L1*L2*L3*L4, 16))
 for i in tqdm(range(L1*L2*L3*L4)):
