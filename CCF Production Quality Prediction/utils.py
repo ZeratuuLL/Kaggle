@@ -139,7 +139,7 @@ def get_prediction(testing, prob_predict, submit=False, name='submission'):
     matrix2 = normalize(matrix1)
     submission[['Excellent ratio', 'Good ratio', 'Pass ratio', 'Fail ratio']] = matrix2.copy()
     if submit:
-        submission.to_csv('{}_rounded.csv'.format(name), index=False)
+        submission.to_csv('./Submissions/{}_rounded.csv'.format(name), index=False)
     return matrix1, matrix2
 
 def approx_score(probs, labels, groups):

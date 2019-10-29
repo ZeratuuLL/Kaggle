@@ -33,7 +33,7 @@ num_to_type = dict(zip(type_to_num.values(), type_to_num.keys()))
 
 N = 5
 
-skf = StratifiedKFold(n_splits=N, shuffle=True, random_state=302)
+skf = StratifiedKFold(n_splits=N, shuffle=True)
 indices = []
 for train_index, test_index in skf.split(training[features], training[['new_Quality']]):
     indices.append([train_index, test_index])
@@ -119,9 +119,16 @@ column_list = ['column_{}'.format(i) for i in range(4*len(test_list))]
 new_train_data = pd.DataFrame(data=np.concatenate(train_list, 1), columns=column_list)
 new_test_data = pd.DataFrame(data=np.concatenate(test_list, 1), columns=column_list)
 
-iter_list = [100, 200]
-lr_list = [0.1, 0.05, 0.1]
-depth_list = [4, 6]
+# now we have 'new features', we will use CV again to select hyper-paraemters
+# First we will do the split again
+skf = StratifiedKFold(n_splits=N, shuffle=True)
+indices = []
+for train_index, test_index in skf.split(training[features], training[['new_Quality']]):
+    indices.append([train_index, test_index])
+
+iter_list = [100, 200, 500, 1000]
+lr_list = [0.1, 0.05, 0.01]
+depth_list = [4, 6, 8, 10]
 setting_list = []
 for iteration in iter_list:
     for lr in lr_list:
@@ -129,25 +136,43 @@ for iteration in iter_list:
             setting_list.append((iteration, lr, depth))
 
 stacking_results = np.zeros((len(setting_list), 7))
-current_best = 0
+current_best_offline_score = 0
+current_best_offline_logloss = 0
+current_best_offline_accuracy = 0
 i = 0
 for setting in tqdm.tqdm(setting_list):
     iteration, lr, depth = setting
     model = CatBoostClassifier(iterations=iteration, depth=depth, learning_rate=lr, silent=True, task_type='GPU', loss_function = 'MultiClass')
-    model.fit(new_train_data, training['new_Quality'])
-    new_train = model.predict_proba(new_train_data)
-    neg_log_loss = -log_loss(training['new_Quality'], new_train)
-    accuracy = accuracy_score(training['new_Quality'], np.argmax(new_train, 1))
+    train_predictions = np.zeros((6000, 4))
+    for j in range(N):
+        train_index = indices[j][0]
+        test_index = indices[j][1]
+        X_train = new_train_data.loc[train_index, column_list]
+        y_train = training.loc[train_index, ['new_Quality']]
+        X_test = new_train_data.loc[test_index, column_list]
+        model.fit(X_train, y_train)
+        train_predictions[test_index, :] += model.predict_proba(X_test)
+    neg_log_loss = -log_loss(training['new_Quality'], train_predictions)
+    accuracy = accuracy_score(training['new_Quality'], np.argmax(train_predictions, 1))
     offline_score1 = []
     offline_score2 = []
     for j in range(100):
-        scores = approx_score(new_train, training['new_Quality'].values, training['group_{}'.format(j)].values)
+        scores = approx_score(train_predictions, training['new_Quality'].values, training['group_{}'.format(j)].values)
         offline_score1.append(scores[0])
         offline_score2.append(scores[1])
     stacking_results[i, :] = np.array([iteration, lr, depth, np.mean(offline_score1), np.mean(offline_score2), neg_log_loss, accuracy])
-    if np.mean(offline_score2)>current_best:
-        current_best = np.mean(offline_score2)
-        submission = model.predict_proba(new_test_data)
+    if np.mean(offline_score2) > current_best_offline_score:
+        current_best_offliene_score = np.mean(offline_score2)
+        model.fit(new_train_data, training[['new_Quality']])
+        submission_offline_score = model.predict_proba(new_test_data[column_list])
+    if neg_log_loss > current_best_offline_logloss:
+        current_best_offline_logloss = neg_log_loss
+        model.fit(new_train_data, training[['new_Quality']])
+        submission_offline_logloss = model.predict_proba(new_test_data[column_list])
+    if accuracy > current_best_offline_accuracy:
+        current_best_offline_accuracy = accuracy
+        model.fit(new_train_data, training[['new_Quality']])
+        submission_offline_accuracy = model.predict_proba(new_test_data[column_list])
     i += 1
 
 stacking_results = pd.DataFrame(data = stacking_results, columns = ['iteration',
@@ -159,7 +184,9 @@ stacking_results = pd.DataFrame(data = stacking_results, columns = ['iteration',
                                                                 'accuracy'])
 stacking_results.to_pickle('stacking_log.pkl')
 
-get_prediction(testing, submission, submit=True, name='Stacking')
+get_prediction(testing, submission_offline_score, submit=True, name='Stacking_score')
+get_prediction(testing, submission_offline_logloss, submit=True, name='Stacking_logloss')
+get_prediction(testing, submission_offline_accuracy, submit=True, name='Stacking_accuracy')
     
 
 
