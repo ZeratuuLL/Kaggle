@@ -2,7 +2,7 @@ from transforms import *
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.model_selection import GridSearchCV, StratifiedKFold
+from sklearn.model_selection import GridSearchCV, StratifiedKFold, KFold
 from multiprocessing import Pool
 from sklearn.metrics import log_loss, accuracy_score
 from sklearn.decomposition import PCA
@@ -12,12 +12,11 @@ pca = PCA()
 def pre_processing(training, testing, type, num_features = -1):
     if type not in ['Original', 'PCA', 'TargetMean', 'WoE']:
         new_features = training.columns.values()
-        return training, testing
+        train_all, test_all = training, testing
     if type == 'Original':
         new_features = ['Parameter'+str(i) for i in [5, 7, 8, 9, 10]]
         train_all, test_all = training.copy(), testing.copy()
         new_features = new_features[:num_features]
-        return train_all, test_all, new_features
     if type == 'PCA':
         new_features = ['Parameter'+str(i) for i in range(5, 11)]
         train_all, test_all = training.copy(), testing.copy()
@@ -25,7 +24,6 @@ def pre_processing(training, testing, type, num_features = -1):
         train_all[new_features] = new_values[:6000, :].copy()
         test_all[new_features] = new_values[6000:, :].copy()
         new_features = new_features[:num_features]
-        return train_all, test_all, new_features
     if type == 'TargetMean':
         features = ["Parameter5","Parameter6","Parameter7","Parameter8","Parameter9","Parameter10"]
         train_all, test_all, new_features = get_all_encoding(training, testing, features)
@@ -33,7 +31,6 @@ def pre_processing(training, testing, type, num_features = -1):
         train_all[new_features] = new_values[:6000, :].copy()
         test_all[new_features] = new_values[6000:, :].copy()
         new_features = new_features[:num_features]
-        return train_all, test_all, new_features
     if type == 'WoE':
         features = ["Parameter5","Parameter6","Parameter7","Parameter8","Parameter9","Parameter10"]
         train_all, test_all, new_features = get_all_WoE(training, testing, features)
@@ -41,7 +38,7 @@ def pre_processing(training, testing, type, num_features = -1):
         train_all[new_features] = new_values[:6000, :].copy()
         test_all[new_features] = new_values[6000:, :].copy()
         new_features = new_features[:num_features]
-        return train_all, test_all, new_features
+    return train_all, test_all, new_features
     
 def gradient(A_list, L, alpha, lambd, regularization='KL'):
     '''
@@ -88,7 +85,7 @@ def target_function(A_list, alpha, L, lambd, regularization):
         reg = -lambd * np.sum((lambd - 1/K)**2)
     return likelihood + reg
 
-def optimize(A_list, L, step_size, lambd=0, regularization='KL', max_iter=100000, eps=1e-7):
+def optimize(A_list, L, step_size, lambd=0, regularization='KL', max_iter=10000, eps=1e-5):
     K = len(A_list)
     alpha = np.ones(K)/K
     counter = 0
@@ -157,3 +154,32 @@ def approx_score(probs, labels, groups):
     mae2 = np.mean(np.abs(rounded - matrix[:, range(4, 8)]))
     score2 = 1/(1+10*mae2)
     return score1, score2
+
+def CV(model, train, test, indices, feature_list, target, predict_on_test=False):
+    '''
+    This function takes a model as input and return the N-Fold CV predictions
+    
+    Other Params:
+    =============
+    train : training set
+    test : test set
+    indices : indices for the N-folds
+    feature_list : list of features for training
+    target : name of target column
+    prediction_on_test : whether should fit the training set and predict the test set
+    '''
+    N = len(indices)
+    train_predict = np.zeros((train.shape[0], 4))
+    test_predict = np.zeros((test.shape[0], 4))
+    for j in range(N):
+        train_index = indices[j][0]
+        test_index = indices[j][1]
+        X_train = train.loc[train_index, feature_list]
+        y_train = train.loc[train_index, [target]]
+        X_test = train.loc[test_index, feature_list]
+        model.fit(X_train, y_train)
+        train_predict[test_index, :] += model.predict_proba(train.loc[test_index, feature_list])
+    if predict_on_test:
+        model.fit(train[feature_list], train[[target]])
+        test_predict = model.predict_proba(test[feature_list])
+    return train_predict, test_predict
